@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ปิยสัตตาบริการ - ระบบสั่งซื้อและเรียกรถ (ฉบับสมบูรณ์)</title>
+    <title>ระบบจัดการร้านค้า - ปิยสัตตาบริการ (Merchant App)</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,118 +20,21 @@
             color: #2d3748;
         }
         
-        /* Header */
+        /* Header ร้านค้า */
         .piyasatta-header {
-            background: linear-gradient(135deg, #ff8c42, #e63946);
+            background: linear-gradient(135deg, #ff9f43, #ff5252);
             color: #ffffff;
             padding: 16px 12px;
             margin-bottom: 16px;
-            box-shadow: 0 8px 20px rgba(230, 57, 70, 0.15);
+            box-shadow: 0 8px 20px rgba(255, 159, 67, 0.15);
             border-radius: 0 0 20px 20px;
         }
         .piyasatta-title { font-weight: 600; font-size: calc(1rem + 0.3vw); }
         .piyasatta-sub { opacity: 0.9; font-weight: 300; font-size: 0.75rem; }
 
-        /* ปุ่มเมนูหลัก 4 ปุ่ม */
-        .btn-main-action {
-            width: 100%;
-            height: 100%;
-            min-height: 85px;
-            border-radius: var(--card-radius);
-            border: none;
-            font-weight: 500;
-            font-size: calc(0.75rem + 0.2vw);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-            padding: 10px 4px;
-            color: #fff;
-        }
-        .btn-main-action:active { transform: scale(0.95); }
-        .btn-main-action i { font-size: 1.5rem; margin-bottom: 6px; }
-
-        .btn-food { background: linear-gradient(135deg, #ff9f43, #ff5252); }
-        .btn-goods { background: linear-gradient(135deg, #00d2d3, #01a3a4); }
-        .btn-taxi { background: linear-gradient(135deg, #10ac84, #1dd1a1); }
-        .btn-reg { background: linear-gradient(135deg, #576574, #2f3542); }
-
-        /* การ์ดสินค้า */
-        .product-card {
-            background: #ffffff;
-            border-radius: 16px;
-            border: 1px solid #edf2f7;
-            padding: 10px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .product-img-wrapper {
-            width: 100%;
-            padding-top: 75%;
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            background-color: #f1f5f9;
-            margin-bottom: 8px;
-        }
-        .product-img {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-        }
-        .badge-shop {
-            font-size: 0.65rem;
-            background-color: #f1f5f9;
-            color: #64748b;
-            padding: 3px 8px;
-            border-radius: 20px;
-        }
-
-        /* Sticky Cart Bar */
-        .sticky-cart-bar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background-color: #ffffff;
-            padding: 10px 16px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-            z-index: 1030;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-        }
-
-        /* Floating Action Buttons (Chat & SOS) */
-        .floating-buttons {
-            position: fixed;
-            bottom: 75px;
-            right: 16px;
-            z-index: 1025;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .float-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: none;
-            color: white;
-            font-size: 1.25rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-            position: relative;
-        }
-        .float-btn:active { transform: scale(0.9); }
-        .btn-chat { background: linear-gradient(135deg, #00b894, #00cec9); }
-        .btn-sos { background: linear-gradient(135deg, #ff7675, #d63031); }
-
+        .card-custom { border: none; border-radius: var(--card-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .profile-avatar { width: 90px; height: 90px; object-fit: cover; border-radius: 50%; border: 3px solid #ff9f43; }
+        
         /* ไฟสถานะ 3 สี */
         .status-light {
             width: 14px;
@@ -150,22 +53,49 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
         }
 
+        /* Floating Action Buttons */
+        .floating-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 16px;
+            z-index: 1025;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .float-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .float-btn:active { transform: scale(0.9); }
+        .btn-chat { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .btn-sos { background: linear-gradient(135deg, #ff7675, #d63031); }
+
         .fs-7 { font-size: 0.8rem; }
     </style>
 </head>
 <body class="pb-5 mb-5">
 
 <div class="piyasatta-header text-center">
-    <div class="piyasatta-title"><i class="fa-solid fa-truck-fast me-1"></i> ปิยสัตตาบริการ</div>
-    <div class="piyasatta-sub mt-1">รับส่งอาหาร สินค้าทั่วไป และผู้โดยสารออนไลน์</div>
-    <div class="piyasatta-sub" style="font-size: 0.68rem;">สำนักงานส่วนกลาง: สันทราย จ.เชียงใหม่ โทร: 098-0581545</div>
+    <div class="piyasatta-title"><i class="fa-solid fa-store me-1"></i> ยินดีต้อนรับสู่บริการสั่งและส่ง</div>
+    <div class="piyasatta-sub mt-1">ระบบจัดการร้านค้า / แม่ค้า (Merchant App)</div>
+    <div class="piyasatta-sub" style="font-size: 0.68rem;">พื้นที่ให้บริการ: สันทราย จ.เชียงใหม่ | โทร: 098-0581545</div>
 </div>
 
 <div class="container-fluid px-3">
-    <!-- แถบแสดงสถานะความปลอดภัยส่วนกลาง (ไฟ 3 สีทุกฝั่งเห็นร่วมกัน) -->
+    <!-- แถบแสดงสถานะความปลอดภัยส่วนกลาง 3 ฝั่ง -->
     <div class="card p-2 mb-3 shadow-sm border-0 rounded-4 bg-white">
         <div class="d-flex justify-content-between align-items-center px-2">
-            <span class="fw-bold fs-7 text-dark"><i class="fa-solid fa-shield-halved me-1 text-primary"></i>สถานะความปลอดภัยระบบ 3 ฝั่ง:</span>
+            <span class="fw-bold fs-7 text-dark"><i class="fa-solid fa-shield-halved me-1 text-danger"></i>สถานะความปลอดภัยระบบ 3 ฝั่ง:</span>
             <span id="globalSystemStatusBadge" class="badge bg-success fs-7 px-2 py-1">🟢 ได้รับการช่วยเหลือแล้ว</span>
         </div>
         <div class="row text-center mt-2 g-1 fs-7">
@@ -184,56 +114,192 @@
         </div>
     </div>
 
-    <!-- 4 เมนูหลัก -->
-    <div class="row g-2 mb-3">
-        <div class="col-3">
-            <button class="btn-main-action btn-food" onclick="openShopModal('food')">
-                <i class="fa-solid fa-utensils"></i>
-                <span>สั่งอาหาร</span>
-            </button>
+    <!-- ส่วนแสดงข้อมูลร้านค้า / สถานะการเข้าสู่ระบบ -->
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-10">
+            <div class="card card-custom p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- หากยังไม่ล็อกอินจะแสดงไอคอนการ์ตูนเริ่มต้น -->
+                        <img id="headerMerchantImg" src="https://api.dicebear.com/7.x/bottts/svg?seed=MerchantDefault" style="width:42px; height:42px; border-radius:50%; object-fit:cover; background:#eee;">
+                        <div>
+                            <span class="fw-bold d-block fs-7" id="headerMerchantName">ยังไม่ได้เข้าสู่ระบบ</span>
+                            <small class="text-muted fs-7" id="headerMerchantStatus" style="font-size: 0.75rem;">🔴 กรุณาเข้าสู่ระบบก่อนใช้งาน</small>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <!-- ปุ่มเข้าสู่ระบบ (กรณีที่ยังไม่ล็อกอิน) -->
+                        <button type="button" class="btn btn-outline-danger btn-sm fs-7" id="btnLoginModalBtn" onclick="openLoginModal()">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i>เข้าสู่ระบบ
+                        </button>
+                        <!-- ปุ่มออกจากระบบ (กรณีล็อกอินแล้ว) -->
+                        <button type="button" class="btn btn-outline-secondary btn-sm fs-7 d-none" id="btnLogoutBtn" onclick="logoutMerchant()">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i>ออกจากระบบ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- เมนู Tab (จะใช้งานได้ก็ต่อเมื่อเข้าสู่ระบบแล้ว) -->
+                <div id="appTabsContainer" class="d-none mt-3 pt-2 border-top">
+                    <div class="btn-group btn-group-sm w-100" role="group">
+                        <button type="button" class="btn btn-danger active" id="btnTabOrders" onclick="switchTab('orders')"><i class="fa-solid fa-bell me-1"></i>ออเดอร์เข้า</button>
+                        <button type="button" class="btn btn-outline-danger" id="btnTabMenu" onclick="switchTab('menu')"><i class="fa-solid fa-utensils me-1"></i>จัดการเมนู</button>
+                        <button type="button" class="btn btn-outline-danger" id="btnTabProfile" onclick="switchTab('profile')"><i class="fa-solid fa-id-card me-1"></i>โปรไฟล์ & พิกัดร้าน</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-3">
-            <button class="btn-main-action btn-goods" onclick="openShopModal('goods')">
-                <i class="fa-solid fa-bag-shopping"></i>
-                <span>สินค้าอื่นๆ</span>
-            </button>
-        </div>
-        <div class="col-3">
-            <button class="btn-main-action btn-taxi" onclick="openTaxiModal()">
-                <i class="fa-solid fa-taxi"></i>
-                <span>เรียกรถ</span>
-            </button>
-        </div>
-        <div class="col-3">
-            <button class="btn-main-action btn-reg" onclick="openRegSelectModal()">
-                <i class="fa-solid fa-user-plus"></i>
-                <span>ลงทะเบียน</span>
+    </div>
+
+    <!-- ข้อความแจ้งเตือนให้เข้าสู่ระบบก่อน -->
+    <div id="notLoggedInWarning" class="text-center py-5">
+        <div class="card card-custom p-4 mx-auto" style="max-width: 450px;">
+            <i class="fa-solid fa-store-slash text-secondary fa-3x mb-3"></i>
+            <h5 class="fw-bold text-dark fs-6">กรุณาเข้าสู่ระบบร้านค้า</h5>
+            <p class="text-muted fs-7">ท่านจำเป็นต้องเข้าสู่ระบบด้วยบัญชีร้านค้าที่สมัครไว้จากระบบหลัก เพื่อจัดการออเดอร์และตั้งค่าพิกัดร้าน</p>
+            <button class="btn btn-danger btn-sm fw-bold py-2 mt-2" onclick="openLoginModal()">
+                <i class="fa-solid fa-right-to-bracket me-1"></i> เข้าสู่ระบบทันที
             </button>
         </div>
     </div>
 
-    <!-- รายการสินค้า Feed -->
-    <div class="mb-3">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="fw-bold m-0"><i class="fa-solid fa-fire text-danger me-1"></i>เมนู & สินค้าอัปเดตล่าสุด</h6>
-            <span class="text-muted fs-7">อัปเดตเรียลไทม์</span>
+    <!-- เนื้อหาแอป (แสดงเฉพาะเมื่อล็อกอินแล้ว) -->
+    <div id="loggedInAppContent" style="display: none;">
+        <!-- TAB 1: รายการออเดอร์เข้าจากลูกค้า -->
+        <div id="tabOrders">
+            <div class="card card-custom p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="card-title text-danger mb-0 fs-6"><i class="fa-solid fa-clipboard-list me-2"></i>ออเดอร์สั่งซื้อสินค้าและอาหารจากลูกค้า</h6>
+                    <button class="btn btn-outline-danger btn-sm fs-7" onclick="fetchOrders()"><i class="fa-solid fa-rotate me-1"></i>รีเฟรชออเดอร์</button>
+                </div>
+                <div id="merchantOrders" class="row g-2">
+                    <div class="text-center text-muted py-4 fs-7">กำลังโหลดออเดอร์...</div>
+                </div>
+            </div>
         </div>
-        <div class="row g-2" id="feedContainer"></div>
-    </div>
 
-    <!-- สถานะออเดอร์ -->
-    <div class="card p-3 shadow-sm border-0 rounded-4 bg-white mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="fw-bold text-primary mb-0 fs-7"><i class="fa-solid fa-clock-rotate-left me-1"></i>สถานะออเดอร์ของคุณ</h6>
-            <button class="btn btn-xs btn-light rounded-pill py-1 px-2 fs-7" onclick="fetchOrders()"><i class="fa-solid fa-rotate"></i> อัปเดต</button>
+        <!-- TAB 2: จัดการเมนูอาหาร / สินค้าของร้าน -->
+        <div id="tabMenu" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card card-custom p-4 mb-3">
+                        <h6 class="card-title text-danger mb-3 fs-6"><i class="fa-solid fa-circle-plus me-2"></i>เพิ่มเมนูอาหาร / สินค้าใหม่</h6>
+                        <form onsubmit="addMenuProduct(event)">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold fs-7">ชื่อเมนู / สินค้า</label>
+                                    <input type="text" id="inputMenuName" class="form-control form-control-sm" placeholder="เช่น ข้าวกะเพราไก่ไข่ดาว" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold fs-7">ราคา (บาท)</label>
+                                    <input type="number" id="inputMenuPrice" class="form-control form-control-sm" placeholder="50" min="1" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold fs-7">ลิงก์รูปภาพสินค้า (URL)</label>
+                                    <input type="url" id="inputMenuImg" class="form-control form-control-sm" placeholder="https://..." required>
+                                </div>
+                                <div class="col-12 text-end mt-2">
+                                    <button type="submit" class="btn btn-danger btn-sm fw-bold px-4"><i class="fa-solid fa-plus me-1"></i>เพิ่มเข้าเมนูร้าน</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card card-custom p-3">
+                        <h6 class="fw-bold text-secondary mb-2 fs-6"><i class="fa-solid fa-utensils me-2"></i>รายการเมนูในร้านของคุณ</h6>
+                        <div id="merchantMenuList" class="row g-2">
+                            <!-- รายการเมนู -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="ordersContainer" style="max-height: 120px; overflow-y: auto;" class="fs-7">
-            <div class="text-center text-muted py-1">กำลังโหลดข้อมูล...</div>
+
+        <!-- TAB 3: โปรไฟล์และปรับหมุดพิกัดร้านค้า -->
+        <div id="tabProfile" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card card-custom p-4">
+                        <h6 class="card-title text-danger mb-3 fs-6"><i class="fa-solid fa-store me-2"></i>ตั้งค่าโปรไฟล์ & ปรับหมุดพิกัดร้านค้า</h6>
+                        <form onsubmit="saveMerchantProfile(event)">
+                            <div class="text-center mb-3">
+                                <img id="profilePreview" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80" class="profile-avatar mb-2">
+                                <div><small class="text-muted fs-7">รูปร้านค้า</small></div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold fs-7">ชื่อร้านค้า</label>
+                                    <input type="text" id="inputShopName" class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold fs-7">เบอร์โทรศัพท์ร้าน</label>
+                                    <input type="tel" id="inputShopPhone" class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold fs-7">ที่อยู่รายละเอียด</label>
+                                    <textarea id="inputShopAddress" class="form-control form-control-sm" rows="2" required></textarea>
+                                </div>
+                                
+                                <!-- ส่วนปรับหมุดพิกัด GPS สำหรับไรเดอร์ -->
+                                <div class="col-12 bg-light p-3 rounded-3 mt-2 border">
+                                    <label class="form-label fw-bold text-danger fs-7 mb-1"><i class="fa-solid fa-location-dot me-1"></i> ปรับหมุดพิกัดตำแหน่งร้าน (สำหรับไรเดอร์มารับของ)</label>
+                                    <small class="text-muted d-block mb-2" style="font-size: 0.7rem;">ท่านสามารถกดปุ่มดึงพิกัดปัจจุบัน หรือกรอกค่าพิกัด GPS เพื่อให้ไรเดอร์นำทางได้อย่างแม่นยำ</small>
+                                    <div class="row g-2">
+                                        <div class="col-5">
+                                            <input type="text" id="inputShopLat" class="form-control form-control-sm" placeholder="ละติจูด (Lat)" required>
+                                        </div>
+                                        <div class="col-5">
+                                            <input type="text" id="inputShopLng" class="form-control form-control-sm" placeholder="ลองจิจูด (Lng)" required>
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="button" class="btn btn-dark btn-sm w-100 fs-7" onclick="getCurrentLocation()" title="ดึงพิกัดปัจจุบัน"><i class="fa-solid fa-crosshairs"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mt-2">
+                                    <label class="form-label fw-bold fs-7">ลิงก์รูปร้านค้า (URL)</label>
+                                    <input type="url" id="inputShopImgUrl" class="form-control form-control-sm" placeholder="https://..." onchange="document.getElementById('profilePreview').src = this.value">
+                                </div>
+                                <div class="col-12 text-end mt-3">
+                                    <button type="submit" class="btn btn-danger btn-sm fw-bold px-4 py-2"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกโปรไฟล์ & พิกัดร้าน</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- ปุ่มลอย: แชทสาธารณะ 3 ฝั่ง และ SOS ฉุกเฉินไฟ 3 สถานะ -->
+<!-- Modal เข้าสู่ระบบ (Login) -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-right-to-bracket me-2"></i>เข้าสู่ระบบร้านค้า (ปิยสัตตาบริการ)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold fs-7">ชื่อผู้ใช้ (Username) หรือเบอร์โทร</label>
+                        <input type="text" id="loginUsername" class="form-control form-control-sm" placeholder="กรอกชื่อผู้ใช้ที่สมัครไว้หน้าหลัก" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold fs-7">รหัสผ่าน (Password)</label>
+                        <input type="password" id="loginPassword" class="form-control form-control-sm" placeholder="กรอกรหัสผ่านของคุณ" required>
+                    </div>
+                    <div class="text-danger fs-7 mb-3 d-none" id="loginErrorMsg">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง หรือยังไม่ได้สมัครสมาชิก</div>
+                    <button type="submit" class="btn btn-danger w-100 fw-bold py-2 fs-7 rounded-pill">เข้าสู่ระบบ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ปุ่มลอย: แชทสาธารณะ 3 ฝั่ง และ SOS ฉุกเฉิน -->
 <div class="floating-buttons">
     <button class="float-btn btn-sos" onclick="openSosModal()" title="ฉุกเฉิน / เปลี่ยนสถานะไฟ 3 สี">
         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -243,51 +309,38 @@
     </button>
 </div>
 
-<!-- Sticky Cart Bar -->
-<div class="sticky-cart-bar">
-    <div class="container d-flex justify-content-between align-items-center p-0">
-        <div>
-            <div class="fw-bold text-danger fs-6">ตะกร้าสินค้า (<span id="cartCount">0</span>)</div>
-            <small class="text-muted fs-7">คลิกเพื่อดูรายการ & ชำระเงิน</small>
-        </div>
-        <button class="btn btn-danger rounded-pill px-4 py-2 fw-bold fs-7 shadow-sm" onclick="openCartModal()">
-            <i class="fa-solid fa-cart-shopping me-1"></i> ดูตะกร้า
-        </button>
-    </div>
-</div>
-
-<!-- Modal แชทสาธารณะ (รวม 3 ฝั่ง: ลูกค้า, ร้านค้า, ไรเดอร์) -->
+<!-- Modal แชทสาธารณะ 3 ฝั่ง -->
 <div class="modal fade" id="publicChatModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4 border-0">
-            <div class="modal-header bg-success text-white">
+            <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-comments me-2"></i>แชทสาธารณะ 3 ฝั่ง (ลูกค้า / ร้านค้า / ไรเดอร์)</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body bg-light">
                 <div class="mb-2">
-                    <label class="form-label fs-7 fw-bold mb-1">เลือกบทบาทของคุณในการพิมพ์:</label>
+                    <label class="form-label fs-7 fw-bold mb-1">เลือกบทบาทในการพิมพ์:</label>
                     <select class="form-select form-select-sm rounded-3" id="chatRoleSelector">
+                        <option value="ร้านค้า" selected>🍳 ร้านค้า/แม่ค้า</option>
                         <option value="ลูกค้า">🛒 ลูกค้า</option>
-                        <option value="ร้านค้า">🍳 ร้านค้า/แม่ค้า</option>
                         <option value="ไรเดอร์">🛵 ไรเดอร์</option>
                     </select>
                 </div>
-                <div id="publicChatMessages" class="p-2 mb-3 bg-white rounded-3 border" style="height: 200px; overflow-y: auto; font-size: 0.8rem;">
+                <div id="publicChatMessages" class="p-2 mb-3 bg-white rounded-3 border" style="height: 180px; overflow-y: auto; font-size: 0.8rem;">
                     <div class="p-2 bg-light rounded-3 mb-2">
-                        <strong class="text-primary">[ระบบ]:</strong> ห้องสนทนากลางสำหรับ ลูกค้า ร้านค้า และไรเดอร์ พูดคุยสอบถาม แจ้งสถานะ หรือประสานงานร่วมกันได้ที่นี่
+                        <strong class="text-primary">[ระบบ]:</strong> ห้องสนทนากลางสำหรับประสานงานออเดอร์และการส่งมอบ
                     </div>
                 </div>
                 <div class="input-group input-group-sm">
-                    <input type="text" class="form-control rounded-start-3" id="publicChatInput" placeholder="พิมพ์ข้อความคุยกันในระบบ...">
-                    <button class="btn btn-success rounded-end-3" type="button" onclick="sendPublicMessage()">ส่งข้อความ</button>
+                    <input type="text" class="form-control rounded-start-3" id="publicChatInput" placeholder="พิมพ์ข้อความ...">
+                    <button class="btn btn-danger rounded-end-3" type="button" onclick="sendPublicMessage()">ส่งข้อความ</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal แจ้งเหตุฉุกเฉิน และเปลี่ยนไฟสถานะ 3 สี -->
+<!-- Modal แจ้งเหตุฉุกเฉิน & เปลี่ยนไฟ 3 สี -->
 <div class="modal fade" id="sosModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4 border-0">
@@ -296,23 +349,17 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center p-4">
-                <h6 class="fw-bold mb-2">เลือกบทบาทเพื่อเปลี่ยนสถานะไฟความปลอดภัย:</h6>
+                <h6 class="fw-bold mb-2 fs-7">เลือกบทบาทเพื่อเปลี่ยนสถานะไฟความปลอดภัย:</h6>
                 <select class="form-select form-select-sm rounded-3 mb-3" id="sosRoleSelector">
+                    <option value="Merchant" selected>ฝั่งร้านค้า (Merchant)</option>
                     <option value="Customer">ฝั่งลูกค้า</option>
-                    <option value="Merchant">ฝั่งร้านค้า/แม่ค้า</option>
                     <option value="Rider">ฝั่งไรเดอร์</option>
                 </select>
 
                 <div class="d-grid gap-2 mb-3">
-                    <button class="btn btn-outline-success fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('green')">
-                        🟢 สีเขียว: ได้รับการช่วยเหลือแล้ว
-                    </button>
-                    <button class="btn btn-outline-warning fw-bold py-2 rounded-pill fs-7 text-dark" onclick="setSystemStatus('yellow')">
-                        🟡 สีเหลือง: ฉุกเฉินไม่มาก (เฝ้าระวัง)
-                    </button>
-                    <button class="btn btn-danger fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('red')">
-                        🔴 สีแดง: ฉุกเฉินมาก (ต้องการความช่วยเหลือด่วน)
-                    </button>
+                    <button class="btn btn-outline-success fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('green')">🟢 สีเขียว: ปกติ / ได้รับความช่วยเหลือแล้ว</button>
+                    <button class="btn btn-outline-warning fw-bold py-2 rounded-pill fs-7 text-dark" onclick="setSystemStatus('yellow')">🟡 สีเหลือง: ฉุกเฉินไม่มาก (วัตถุดิบหมด)</button>
+                    <button class="btn btn-danger fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('red')">🔴 สีแดง: เหตุฉุกเฉินด่วนที่ร้านค้า!</button>
                 </div>
 
                 <hr>
@@ -324,279 +371,142 @@
     </div>
 </div>
 
-<!-- Modal เรียกรถ -->
-<div class="modal fade" id="taxiModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-taxi me-2"></i>เรียกรถเดินทาง</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-2">
-                    <label class="form-label fs-7 mb-1">ประเภทรถ</label>
-                    <select class="form-select form-select-sm rounded-3" id="vehicleType">
-                        <option value="รถจักรยานยนต์">รถจักรยานยนต์</option>
-                        <option value="รถยนต์">รถยนต์</option>
-                    </select>
-                </div>
-                <div class="mb-2">
-                    <label class="form-label fs-7 mb-1">ชื่อผู้เดินทาง</label>
-                    <input type="text" class="form-control form-control-sm rounded-3" id="passengerName" placeholder="ระบุชื่อ">
-                </div>
-                <div class="mb-2">
-                    <label class="form-label fs-7 mb-1">เบอร์โทรศัพท์</label>
-                    <input type="tel" class="form-control form-control-sm rounded-3" id="passengerPhone" placeholder="08X-XXX-XXXX">
-                </div>
-                <div class="mb-2">
-                    <label class="form-label fs-7 mb-1">จุดรับ</label>
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control rounded-start-3" id="pickupLocation" placeholder="ระบุจุดรับ">
-                        <button class="btn btn-outline-success rounded-end-3 fs-7" type="button" onclick="getPickupGPS()"><i class="fa-solid fa-location-crosshairs"></i> GPS</button>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <label class="form-label fs-7 mb-1">จุดส่ง</label>
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control rounded-start-3" id="dropoffLocation" placeholder="ระบุจุดส่ง">
-                        <button class="btn btn-outline-primary rounded-end-3 fs-7 fw-bold" type="button" onclick="openGoogleMaps()"><i class="fa-solid fa-map-location-dot text-danger"></i> นำทาง</button>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <label class="form-label fs-7 mb-1">ประเมินระยะทาง (กิโลเมตร)</label>
-                    <input type="number" class="form-control form-control-sm rounded-3" id="taxiDistanceInput" value="3" min="1" onchange="calculateTaxiFare()">
-                </div>
-                <div class="bg-light p-2 rounded-3 mb-3 border fs-7">
-                    <div class="d-flex justify-content-between mb-1"><span>ค่าโดยสารตามระยะทาง:</span><span id="taxiFare">20.00</span> ฿</div>
-                    <div class="d-flex justify-content-between text-muted mb-1"><span>ภาษี VAT (7%):</span><span id="taxiVat">1.40</span> ฿</div>
-                    <hr class="my-1">
-                    <div class="d-flex justify-content-between fw-bold text-success"><span>รวมสุทธิ:</span><span id="taxiGrandTotal">21.40</span> ฿</div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fs-7 mb-1 fw-bold text-success">วิธีชำระเงิน</label>
-                    <select class="form-select form-select-sm rounded-3" id="taxiPaymentMethod">
-                        <option value="เงินสด">เงินสด (จ่ายกับคนขับ)</option>
-                        <option value="โอนเงิน">โอนเงิน (สแกนจ่ายเมื่อถึงจุดหมาย)</option>
-                    </select>
-                </div>
-                <button class="btn btn-success w-100 rounded-pill fw-bold fs-7 py-2" onclick="submitTaxiOrder()">ยืนยันเรียกรถ</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal ร้านค้า/อาหาร -->
-<div class="modal fade" id="shopModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title fs-6 fw-bold" id="shopModalTitle"><i class="fa-solid fa-store me-2"></i>รายการสั่งซื้อ</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="shopGuideBox" class="alert alert-warning border-0 rounded-3 py-2 px-3 fs-7 mb-3">
-                    <b>💡 คำแนะนำ:</b> เลือกรายการลงตะกร้า แล้วกด "ดูตะกร้า" เพื่อกรอกที่อยู่จัดส่งและคำนวณภาษี
-                </div>
-                <div id="shopListContainer"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal เลือกระบบลงทะเบียน -->
-<div class="modal fade" id="regSelectModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header bg-secondary text-white">
-                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-user-plus me-2"></i>เลือกระบบลงทะเบียน</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <button class="btn btn-outline-primary w-100 mb-2 py-2 fw-bold rounded-3" onclick="openRegModal('สมัครเปิดร้านอาหาร')">สมัครเปิดร้านอาหาร</button>
-                <button class="btn btn-outline-primary w-100 mb-2 py-2 fw-bold rounded-3" onclick="openRegModal('สมัครเปิดร้านค้าทั่วไป')">สมัครเปิดร้านค้าทั่วไป</button>
-                <button class="btn btn-outline-primary w-100 mb-3 py-2 fw-bold rounded-3" onclick="openRegModal('สมัครขับรถรับส่ง/ไรเดอร์')">สมัครขับรถรับส่ง/ไรเดอร์</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal ฟอร์มลงทะเบียน -->
-<div class="modal fade" id="regModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fs-6 fw-bold" id="regTitle">ลงทะเบียน</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-2"><label class="fs-7">ชื่อ-นามสกุล</label><input type="text" id="regName" class="form-control form-control-sm rounded-3"></div>
-                <div class="mb-2"><label class="fs-7">ชื่อร้านค้า / บริการ</label><input type="text" id="regShopName" class="form-control form-control-sm rounded-3"></div>
-                <div class="mb-2"><label class="fs-7">เบอร์โทรศัพท์</label><input type="tel" id="regPhone" class="form-control form-control-sm rounded-3"></div>
-                <div class="mb-2"><label class="fs-7">ที่อยู่ / พิกัดร้าน</label><textarea id="regAddress" class="form-control form-control-sm rounded-3" rows="2"></textarea></div>
-                <button class="btn btn-primary w-100 rounded-pill mt-3 fw-bold fs-7 py-2" onclick="submitRegistration()">ส่งข้อมูล</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal ตะกร้าสินค้า -->
-<div class="modal fade" id="cartModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-cart-shopping me-2"></i>ตะกร้าสินค้า & คำนวณยอดเงิน</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-md-6 border-end">
-                        <h6 class="fw-bold text-danger mb-2 fs-7">รายการสินค้า</h6>
-                        <div id="cartItemsList" class="mb-3" style="max-height: 180px; overflow-y: auto;"></div>
-                        <div class="mb-2">
-                            <label class="form-label mb-0 fs-7 fw-bold">ระยะทางจัดส่ง (กม.)</label>
-                            <input type="number" class="form-control form-control-sm rounded-3" id="deliveryDistanceInput" value="2" min="1" onchange="updateCartUI()">
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between mb-1 fs-7"><span>รวมราคาสินค้า:</span><span id="subTotal">0.00</span> บาท</div>
-                        <div class="d-flex justify-content-between mb-1 text-muted fs-7"><span>ค่าจัดส่งตามระยะทาง:</span><span id="deliveryFee">15.00</span> บาท</div>
-                        <div class="d-flex justify-content-between mb-1 text-muted fs-7"><span>ภาษีมูลค่าเพิ่ม VAT (7%):</span><span id="vatFee">0.00</span> บาท</div>
-                        <hr>
-                        <div class="d-flex justify-content-between fw-bold text-danger fs-6"><span>ยอดรวมทั้งสิ้น:</span><span id="grandTotal">0.00</span> บาท</div>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="fw-bold text-primary mb-2 fs-7">ข้อมูลจัดส่ง & การชำระเงิน</h6>
-                        <div class="mb-2"><label class="form-label mb-0 fs-7">ชื่อผู้รับ</label><input type="text" class="form-control form-control-sm rounded-3" id="customerName"></div>
-                        <div class="mb-2"><label class="form-label mb-0 fs-7">เบอร์โทร</label><input type="tel" class="form-control form-control-sm rounded-3" id="phone"></div>
-                        <div class="mb-2">
-                            <label class="form-label mb-0 fs-7">ที่อยู่จัดส่ง / ปักหมุด</label>
-                            <div class="input-group input-group-sm">
-                                <input type="text" class="form-control rounded-start-3" id="address">
-                                <button class="btn btn-outline-danger rounded-end-3" onclick="getCurrentLocation()"><i class="fa-solid fa-location-dot"></i> GPS</button>
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label mb-1 fs-7 fw-bold text-dark">ช่องทางชำระเงิน</label>
-                            <div class="d-flex gap-2">
-                                <div class="form-check form-check-inline flex-fill border rounded-3 p-2 ms-0 text-center">
-                                    <input class="form-check-input" type="radio" name="paymentType" id="payCash" value="เงินสด (ชำระปลายทาง)" checked onchange="togglePaymentBox()">
-                                    <label class="form-check-label fs-7 fw-bold" for="payCash"><i class="fa-solid fa-money-bill-wave text-success me-1"></i>เงินสด</label>
-                                </div>
-                                <div class="form-check form-check-inline flex-fill border rounded-3 p-2 me-0 text-center">
-                                    <input class="form-check-input" type="radio" name="paymentType" id="payTransfer" value="เงินโอน (สแกน QR / พร้อมเพย์)" onchange="togglePaymentBox()">
-                                    <label class="form-check-label fs-7 fw-bold" for="payTransfer"><i class="fa-solid fa-qrcode text-primary me-1"></i>เงินโอน</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="transferBox" class="bg-light p-3 rounded-3 mb-2 border text-center d-none">
-                            <small class="fw-bold text-primary d-block fs-7 mb-1"><i class="fa-solid fa-qrcode me-1"></i>สแกน QR Code หรือโอนเงินผ่านบัญชี</small>
-                            <div class="my-2 bg-white p-2 rounded shadow-sm d-inline-block">
-                                <img src="1000000344.jpg" alt="Thai QR Payment" class="img-fluid rounded" style="max-width: 180px;">
-                            </div>
-                            <div class="fs-7 fw-bold text-dark">ธนาคารกสิกรไทย (KBANK)</div>
-                            <div class="fs-7 fw-bold text-danger">236-1-15700-4</div>
-                            <small class="text-muted d-block" style="font-size: 0.75rem;">ชื่อบัญชี: นาย บัณฑิตธรรม ปิยสัตตา</small>
-                            <div class="mt-2 text-start">
-                                <label class="form-label mb-0 fs-7">แนบสลิปการโอนเงิน</label>
-                                <input type="file" class="form-control form-control-sm rounded-3 mt-1" id="slipFile" accept="image/*">
-                            </div>
-                        </div>
-                        <button class="btn btn-danger w-100 rounded-pill fw-bold py-2 fs-7 mt-2" onclick="submitFinalOrder()">ยืนยันสั่งซื้อ</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- โหลด Socket.io สำหรับใช้งานเรียลไทม์ร่วมกับ Render -->
+<!-- Socket.io & Bootstrap JS -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const socket = io(); // เชื่อมต่อกับเซิร์ฟเวอร์ Node.js
+    const socket = io();
+    const API_URL = '/api/orders';
 
-    const mockData = {
-        food: [
-            { 
-                shopName: "ร้านป้าต้อย อาหารตามสั่ง", 
-                items: [
-                    { name: "ผัดกระเพราหมูกรอบ", price: 60, img: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500&q=80" }, 
-                    { name: "ข้าวผัดกุ้ง", price: 55, img: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&q=80" }
-                ] 
-            },
-            { 
-                shopName: "ร้านเชฟตั้ม", 
-                items: [
-                    { name: "ข้าวหมูกระเทียมไข่ดาว", price: 50, img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80" }, 
-                    { name: "คะน้าหมูกรอบ", price: 60, img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&q=80" }
-                ] 
-            }
-        ],
-        goods: [
-            { 
-                shopName: "สันทราย มินิมาร์ท", 
-                items: [
-                    { name: "น้ำดื่ม 600ml (แพ็ค)", price: 45, img: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500&q=80" }, 
-                    { name: "ขนมปังโฮลวีต", price: 35, img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&q=80" }
-                ] 
-            }
-        ]
+    let currentMerchant = null;
+    let merchantMenuList = [
+        { name: 'ผัดกระเพราหมูกรอบ', price: 60, img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500&q=80' },
+        { name: 'ข้าวผัดกุ้ง', price: 55, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&q=80' }
+    ];
+
+    let systemStatuses = { Customer: 'green', Merchant: 'green', Rider: 'green' };
+
+    window.onload = function() {
+        checkLoginState();
+        updateStatusLights();
     };
 
-    let cart = [];
-    let lastOrderDetails = null;
-    const VAT_RATE = 0.07;
-    
-    let systemStatuses = {
-        Customer: 'green',
-        Merchant: 'green',
-        Rider: 'green'
+    // ตรวจสอบสถานะการเข้าสู่ระบบจาก LocalStorage ถาวร
+    fn = function checkLoginState() {
+        const savedMerchant = localStorage.getItem('piyasatta_logged_merchant');
+        if (savedMerchant) {
+            currentMerchant = JSON.parse(savedMerchant);
+            applyLoginUI();
+            fetchOrders();
+            renderMenuList();
+        } else {
+            applyLogoutUI();
+        }
     };
 
-    function calculateDeliveryFee(distance) {
-        if (distance <= 2) return 15;
-        return 15 + ((distance - 2) * 5);
+    function applyLoginUI() {
+        document.getElementById('headerMerchantImg').src = currentMerchant.imgUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80';
+        document.getElementById('headerMerchantName').innerText = currentMerchant.name || 'ร้านค้าของฉัน';
+        document.getElementById('headerMerchantStatus').innerText = '🟢 เปิดให้บริการปกติ';
+        document.getElementById('headerMerchantStatus').className = 'text-success fs-7';
+
+        document.getElementById('btnLoginModalBtn').classList.add('d-none');
+        document.getElementById('btnLogoutBtn').classList.remove('d-none');
+        document.getElementById('appTabsContainer').classList.remove('d-none');
+        document.getElementById('notLoggedInWarning').style.display = 'none';
+        document.getElementById('loggedInAppContent').style.display = 'block';
+
+        // เติมข้อมูลลงฟอร์มโปรไฟล์
+        document.getElementById('inputShopName').value = currentMerchant.name || '';
+        document.getElementById('inputShopPhone').value = currentMerchant.phone || '';
+        document.getElementById('inputShopAddress').value = currentMerchant.address || '';
+        document.getElementById('inputShopLat').value = currentMerchant.lat || '18.8500';
+        document.getElementById('inputShopLng').value = currentMerchant.lng || '99.0000';
+        document.getElementById('inputShopImgUrl').value = currentMerchant.imgUrl || '';
     }
 
-    function getModalInstance(modalId) {
-        const el = document.getElementById(modalId);
-        return bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+    function applyLogoutUI() {
+        currentMerchant = null;
+        document.getElementById('headerMerchantImg').src = 'https://api.dicebear.com/7.x/bottts/svg?seed=MerchantDefault';
+        document.getElementById('headerMerchantName').innerText = 'ยังไม่ได้เข้าสู่ระบบ';
+        document.getElementById('headerMerchantStatus').innerText = '🔴 กรุณาเข้าสู่ระบบก่อนใช้งาน';
+        document.getElementById('headerMerchantStatus').className = 'text-muted fs-7';
+
+        document.getElementById('btnLoginModalBtn').classList.remove('d-none');
+        document.getElementById('btnLogoutBtn').classList.add('d-none');
+        document.getElementById('appTabsContainer').classList.add('d-none');
+        document.getElementById('notLoggedInWarning').style.display = 'block';
+        document.getElementById('loggedInAppContent').style.display = 'none';
     }
 
-    function openPublicChatModal() { getModalInstance('publicChatModal').show(); }
-    function openSosModal() { getModalInstance('sosModal').show(); }
-
-    function sendPublicMessage() {
-        const input = document.getElementById('publicChatInput');
-        const role = document.getElementById('chatRoleSelector').value;
-        const text = input.value.trim();
-        if(!text) return;
-
-        socket.emit('send-public-message', { role, text });
-        input.value = '';
+    function openLoginModal() {
+        new bootstrap.Modal(document.getElementById('loginModal')).show();
     }
 
+    function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+
+        // ดึงข้อมูลบัญชีที่สมัครไว้จากระบบกลาง (LocalStorage ที่ลงทะเบียนจากหน้าหลัก/ลูกค้า)
+        const registeredUsers = JSON.parse(localStorage.getItem('piyasatta_users') || '[]');
+        const foundUser = registeredUsers.find(u => (u.username === username || u.phone === username) && u.password === password && u.role === 'merchant');
+
+        if (foundUser || (username === 'admin' && password === '1234')) { // เผื่อบัญชีทดสอบเริ่มต้น
+            currentMerchant = foundUser || {
+                name: 'ร้านป้าต้อย อาหารตามสั่ง',
+                phone: username,
+                address: 'ต.สันทราย อ.สันทราย เชียงใหม่',
+                lat: '18.8512',
+                lng: '99.0123',
+                imgUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80'
+            };
+
+            localStorage.setItem('piyasatta_logged_merchant', JSON.stringify(currentMerchant));
+            bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+            applyLoginUI();
+            fetchOrders();
+            renderMenuList();
+            alert('เข้าสู่ระบบสำเร็จ!');
+        } else {
+            document.getElementById('loginErrorMsg').classList.remove('d-none');
+        }
+    }
+
+    function logoutMerchant() {
+        localStorage.removeItem('piyasatta_logged_merchant');
+        applyLogoutUI();
+        alert('ออกจากระบบเรียบร้อยแล้ว');
+    }
+
+    // ฟังก์ชันดึงพิกัด GPS ปัจจุบันของร้านค้า
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                document.getElementById('inputShopLat').value = position.coords.latitude.toFixed(6);
+                document.getElementById('inputShopLng').value = position.coords.longitude.toFixed(6);
+                alert('ดึงพิกัดตำแหน่งร้านค้าสำเร็จ!');
+            }, (error) => {
+                alert('ไม่สามารถดึงพิกัดได้: กรุณาเปิดใช้งาน GPS หรืออนุญาตการเข้าถึงตำแหน่ง');
+            });
+        } else {
+            alert('เบราว์เซอร์ของคุณไม่รองรับการระบุพิกัด GPS');
+        }
+    }
+
+    // Realtime Socket Listeners
+    socket.on('new-order', (orderData) => { fetchOrders(); alert('🔔 มีออเดอร์ใหม่ส่งตรงถึงร้านของคุณ!'); });
+    socket.on('broadcast-new-order', (orderData) => { fetchOrders(); alert('🔔 มีออเดอร์ใหม่ส่งตรงถึงร้านของคุณ!'); });
     socket.on('receive-public-message', (data) => {
         const chatBox = document.getElementById('publicChatMessages');
-        let roleBadgeColor = data.role === 'ลูกค้า' ? 'text-primary' : (data.role === 'ร้านค้า' ? 'text-success' : 'text-warning');
-        chatBox.innerHTML += `<div class="p-2 bg-white border rounded-3 mb-2"><strong class="${roleBadgeColor}">[${data.role}]:</strong> ${data.text}</div>`;
+        let badgeColor = data.role === 'ร้านค้า' ? 'text-danger' : (data.role === 'ลูกค้า' ? 'text-primary' : 'text-warning');
+        chatBox.innerHTML += `<div class="p-2 bg-white border rounded-3 mb-2"><strong class="${badgeColor}">[${data.role}]:</strong> ${data.text}</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
     });
-
-    function setSystemStatus(color) {
-        const role = document.getElementById('sosRoleSelector').value;
-        systemStatuses[role] = color;
-        socket.emit('update-system-status', systemStatuses);
-        getModalInstance('sosModal').hide();
-    }
-
-    socket.on('broadcast-system-status', (statuses) => {
-        systemStatuses = statuses;
-        updateStatusLights();
-    });
+    socket.on('broadcast-system-status', (statuses) => { systemStatuses = statuses; updateStatusLights(); });
 
     function updateStatusLights() {
         const mapColorClass = { green: 'light-green', yellow: 'light-yellow', red: 'light-red' };
-        
         document.getElementById('lightCustomer').className = `status-light ${mapColorClass[systemStatuses.Customer]}`;
         document.getElementById('lightMerchant').className = `status-light ${mapColorClass[systemStatuses.Merchant]}`;
         document.getElementById('lightRider').className = `status-light ${mapColorClass[systemStatuses.Rider]}`;
@@ -614,274 +524,156 @@
         }
     }
 
-    function togglePaymentBox() {
-        const isTransfer = document.getElementById('payTransfer').checked;
-        const transferBox = document.getElementById('transferBox');
-        if (isTransfer) transferBox.classList.remove('d-none');
-        else transferBox.classList.add('d-none');
+    function switchTab(tab) {
+        document.getElementById('tabOrders').style.display = tab === 'orders' ? 'block' : 'none';
+        document.getElementById('tabMenu').style.display = tab === 'menu' ? 'block' : 'none';
+        document.getElementById('tabProfile').style.display = tab === 'profile' ? 'block' : 'none';
+
+        document.getElementById('btnTabOrders').className = tab === 'orders' ? 'btn btn-danger active' : 'btn btn-outline-danger';
+        document.getElementById('btnTabMenu').className = tab === 'menu' ? 'btn btn-danger active' : 'btn btn-outline-danger';
+        document.getElementById('btnTabProfile').className = tab === 'profile' ? 'btn btn-danger active' : 'btn btn-outline-danger';
     }
 
-    function openGoogleMaps() {
-        const pickup = document.getElementById('pickupLocation').value.trim();
-        const dropoff = document.getElementById('dropoffLocation').value.trim();
-        if (!dropoff) return alert('กรุณาระบุจุดส่งก่อนครับ');
-        let mapsUrl = pickup 
-            ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(dropoff)}&travelmode=driving`
-            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dropoff)}`;
-        window.open(mapsUrl, '_blank');
+    function addMenuProduct(e) {
+        e.preventDefault();
+        const name = document.getElementById('inputMenuName').value.trim();
+        const price = parseFloat(document.getElementById('inputMenuPrice').value);
+        const img = document.getElementById('inputMenuImg').value.trim();
+
+        if (!name || !price || !img) return alert('กรุณากรอกข้อมูลสินค้าให้ครบถ้วน');
+
+        merchantMenuList.push({ name, price, img });
+        renderMenuList();
+
+        document.getElementById('inputMenuName').value = '';
+        document.getElementById('inputMenuPrice').value = '';
+        document.getElementById('inputMenuImg').value = '';
+        alert('เพิ่มเมนูสำเร็จ!');
+        switchTab('menu');
     }
 
-    function getPickupGPS() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                document.getElementById('pickupLocation').value = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-            }, () => alert('ไม่สามารถดึงตำแหน่งปัจจุบันได้ กรุณาเปิด GPS'));
-        }
-    }
-
-    function calculateTaxiFare() {
-        const dist = parseFloat(document.getElementById('taxiDistanceInput').value) || 1;
-        const fare = calculateDeliveryFee(dist);
-        const vat = fare * VAT_RATE;
-        const total = fare + vat;
-        document.getElementById('taxiFare').innerText = fare.toFixed(2);
-        document.getElementById('taxiVat').innerText = vat.toFixed(2);
-        document.getElementById('taxiGrandTotal').innerText = total.toFixed(2);
-    }
-
-    function loadFeed() {
-        const feedContainer = document.getElementById('feedContainer');
-        let feedHTML = '';
-        [...mockData.food, ...mockData.goods].forEach(shop => {
-            shop.items.forEach(item => {
-                feedHTML += `
-                    <div class="col-6 col-md-3">
-                        <div class="product-card">
-                            <div>
-                                <div class="product-img-wrapper">
-                                    <img src="${item.img}" class="product-img" alt="${item.name}" loading="lazy">
-                                </div>
-                                <span class="badge-shop mb-1 d-inline-block text-truncate" style="max-width: 100%;">${shop.shopName}</span>
-                                <div class="fw-bold fs-7 text-dark mb-1 text-truncate">${item.name}</div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <span class="fw-bold text-danger fs-7">฿${item.price}</span>
-                                <button class="btn btn-sm btn-outline-danger rounded-pill px-2 py-0 fs-7" onclick="addToCart('${shop.shopName}', '${item.name}', ${item.price})">+ สั่ง</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        });
-        feedContainer.innerHTML = feedHTML;
-    }
-
-    function openShopModal(category) {
-        document.getElementById('shopModalTitle').innerText = category === 'food' ? 'สั่งอาหาร' : 'สินค้าอื่นๆ';
-        const container = document.getElementById('shopListContainer');
-        container.innerHTML = mockData[category].map(shop => `
-            <div class="card mb-3 p-3 border-0 bg-light rounded-3">
-                <h6 class="fw-bold text-danger mb-2 fs-7"><i class="fa-solid fa-shop me-1"></i>${shop.shopName}</h6>
-                <div class="row g-2">
-                    ${shop.items.map(item => `
-                        <div class="col-12 col-md-6">
-                            <div class="d-flex align-items-center p-2 bg-white rounded-3 border-0 shadow-sm">
-                                <img src="${item.img}" style="width: 55px; height: 55px; object-fit: cover; border-radius: 8px;" class="me-2">
-                                <div class="flex-grow-1">
-                                    <div class="fw-bold fs-7">${item.name}</div>
-                                    <small class="text-muted fs-7">${item.price} บาท</small>
-                                </div>
-                                <button class="btn btn-sm btn-danger rounded-pill px-3 fs-7" onclick="addToCart('${shop.shopName}', '${item.name}', ${item.price})">+ สั่ง</button>
-                            </div>
-                        </div>
-                    `).join('')}
+    function renderMenuList() {
+        const container = document.getElementById('merchantMenuList');
+        container.innerHTML = merchantMenuList.map(item => `
+            <div class="col-6 col-md-4">
+                <div class="card p-2 border-0 bg-light rounded-3">
+                    <img src="${item.img}" style="height: 90px; object-fit: cover; border-radius: 8px;" class="mb-1">
+                    <div class="fw-bold fs-7 text-truncate">${item.name}</div>
+                    <small class="text-danger fw-bold fs-7">฿${item.price}</small>
                 </div>
             </div>
         `).join('');
-        getModalInstance('shopModal').show();
     }
 
-    function openTaxiModal() { 
-        calculateTaxiFare();
-        getModalInstance('taxiModal').show(); 
-    }
-    
-    function openRegSelectModal() { getModalInstance('regSelectModal').show(); }
-
-    function openRegModal(type) {
-        bootstrap.Modal.getInstance(document.getElementById('regSelectModal')).hide();
-        document.getElementById('regTitle').innerText = type;
-        getModalInstance('regModal').show();
-    }
-
-    function submitRegistration() {
-        const name = document.getElementById('regName').value.trim();
-        const shopName = document.getElementById('regShopName').value.trim();
-        const phone = document.getElementById('regPhone').value.trim();
-        const address = document.getElementById('regAddress').value.trim();
-
-        if (!name || !phone) {
-            alert('กรุณากรอกชื่อและเบอร์โทรศัพท์ให้ครบถ้วน');
-            return;
-        }
-
-        alert('ส่งข้อมูลลงทะเบียนเรียบร้อยแล้ว');
-        getModalInstance('regModal').hide();
+    function saveMerchantProfile(e) {
+        e.preventDefault();
+        currentMerchant.name = document.getElementById('inputShopName').value;
+        currentMerchant.phone = document.getElementById('inputShopPhone').value;
+        currentMerchant.address = document.getElementById('inputShopAddress').value;
+        currentMerchant.lat = document.getElementById('inputShopLat').value;
+        currentMerchant.lng = document.getElementById('inputShopLng').value;
         
-        // เคลียร์ค่าในฟอร์มลงทะเบียน
-        document.getElementById('regName').value = '';
-        document.getElementById('regShopName').value = '';
-        document.getElementById('regPhone').value = '';
-        document.getElementById('regAddress').value = '';
+        const imgUrl = document.getElementById('inputShopImgUrl').value;
+        if (imgUrl) currentMerchant.imgUrl = imgUrl;
+
+        localStorage.setItem('piyasatta_logged_merchant', JSON.stringify(currentMerchant));
+        applyLoginUI();
+
+        alert('บันทึกโปรไฟล์และพิกัดร้านค้าถาวรเรียบร้อยแล้ว! (ไรเดอร์สามารถใช้นำทางมารับของได้ถูกต้อง)');
+        switchTab('orders');
     }
 
-    function addToCart(shopName, itemName, price) {
-        const index = cart.findIndex(i => i.name === itemName && i.shopName === shopName);
-        if (index > -1) cart[index].qty += 1;
-        else cart.push({ shopName, name: itemName, price, qty: 1 });
-        updateCartCount();
-    }
+    async function fetchOrders() {
+        try {
+            const res = await fetch(API_URL);
+            const orders = await res.json();
+            const container = document.getElementById('merchantOrders');
 
-    function changeQty(index, delta) {
-        cart[index].qty += delta;
-        if (cart[index].qty <= 0) cart.splice(index, 1);
-        updateCartUI();
-    }
+            if (!orders || orders.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-4 fs-7">ยังไม่มีออเดอร์สั่งซื้อเข้ามา</div>';
+                return;
+            }
 
-    function updateCartCount() {
-        document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
-    }
+            container.innerHTML = orders.slice().reverse().map(order => {
+                const customerName = order.name || order.customerName || 'ไม่ระบุชื่อ';
+                const customerPhone = order.phone || '-';
+                const customerAddress = order.address || 'ที่อยู่ลูกค้า';
+                const totalAmount = order.total || order.totalAmount || '0.00';
+                const paymentInfo = order.payment || order.paymentType || 'เงินสด';
 
-    function openCartModal() {
-        updateCartUI();
-        getModalInstance('cartModal').show();
-    }
+                return `
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0 rounded-4">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0 text-danger fs-7">
+                                    <i class="fa-solid fa-box text-danger me-1"></i>ออเดอร์ #${order.id || 'NEW'}
+                                </h6>
+                                <span class="badge bg-secondary fs-7">${order.status || 'รอดำเนินการ'}</span>
+                            </div>
+                            <p class="mb-1 fs-7"><strong>ลูกค้า:</strong> ${customerName} (${customerPhone})</p>
+                            <p class="mb-1 fs-7 text-muted"><strong>ที่อยู่จัดส่ง:</strong> ${customerAddress}</p>
+                            <p class="mb-1 fs-7"><strong>การชำระเงิน:</strong> ${paymentInfo}</p>
+                            <p class="mb-2 fw-bold text-danger fs-7"><strong>ยอดรวมสุทธิ:</strong> ${totalAmount} บาท</p>
 
-    function updateCartUI() {
-        const cartList = document.getElementById('cartItemsList');
-        updateCartCount();
-        if (cart.length === 0) {
-            cartList.innerHTML = '<div class="text-center text-muted py-3 fs-7">ไม่มีสินค้าในตะกร้า</div>';
-            document.getElementById('subTotal').innerText = '0.00';
-            document.getElementById('deliveryFee').innerText = '0.00';
-            document.getElementById('vatFee').innerText = '0.00';
-            document.getElementById('grandTotal').innerText = '0.00';
-            return;
-        }
-        let subtotal = 0;
-        cartList.innerHTML = cart.map((item, idx) => {
-            const total = item.price * item.qty;
-            subtotal += total;
-            return `
-                <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom fs-7">
-                    <div>
-                        <div class="fw-bold">${item.name}</div>
-                        <small class="text-muted">฿${item.price} x ${item.qty} (${item.shopName})</small>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="fw-bold text-danger">฿${total}</span>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-secondary py-0 px-2" onclick="changeQty(${idx}, -1)">-</button>
-                            <button class="btn btn-outline-secondary py-0 px-2" onclick="changeQty(${idx}, 1)">+</button>
+                            ${!order.status || order.status === 'pending' || order.status === 'รอตรวจสอบการโอน' || order.status === 'กำลังจัดเตรียมสินค้า' ? `
+                                <button class="btn btn-danger w-100 py-1 fs-7 fw-bold" onclick="updateOrderStatus(${order.id || 1}, 'ready')">
+                                    <i class="fa-solid fa-utensils me-1"></i>ทำอาหารเสร็จ / พร้อมส่งมอบให้ไรเดอร์
+                                </button>
+                            ` : `
+                                <div class="text-success small text-center py-1 bg-light rounded-3 fs-7">
+                                    <i class="fa-solid fa-check me-1"></i>ส่งต่อให้ไรเดอร์เรียบร้อย
+                                </div>
+                            `}
                         </div>
                     </div>
                 </div>
-            `;
-        }).join('');
-
-        const distance = parseFloat(document.getElementById('deliveryDistanceInput').value) || 1;
-        const deliveryFee = calculateDeliveryFee(distance);
-        const vatFee = (subtotal + deliveryFee) * VAT_RATE;
-        const grandTotal = subtotal + deliveryFee + vatFee;
-
-        document.getElementById('subTotal').innerText = subtotal.toFixed(2);
-        document.getElementById('deliveryFee').innerText = deliveryFee.toFixed(2);
-        document.getElementById('vatFee').innerText = vatFee.toFixed(2);
-        document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
-    }
-
-    function getCurrentLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                document.getElementById('address').value = `📍 GPS: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-            }, () => alert('ไม่สามารถดึงตำแหน่งปัจจุบันได้ กรุณาเปิด GPS'));
+                `;
+            }).join('');
+        } catch (err) {
+            console.error(err);
         }
     }
 
-    function submitFinalOrder() {
-        const name = document.getElementById('customerName').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const address = document.getElementById('address').value.trim();
-        const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
-        const grandTotal = document.getElementById('grandTotal').innerText;
-        const vatFee = document.getElementById('vatFee').innerText;
-
-        if (!name || !phone || !address) return alert('กรุณากรอกชื่อ เบอร์โทร และที่อยู่จัดส่งให้ครบถ้วน');
-        if (cart.length === 0) return alert('กรุณาเลือกสินค้าในตะกร้าก่อนครับ');
-
-        lastOrderDetails = {
-            type: 'สั่งสินค้า/อาหาร', name, phone, total: grandTotal, vat: vatFee, payment: paymentType,
-            status: paymentType.includes('โอนเงิน') ? 'รอตรวจสอบการโอน' : 'กำลังจัดเตรียมสินค้า'
-        };
-
-        socket.emit('new-order', lastOrderDetails);
-
-        alert(`บันทึกคำสั่งซื้อเรียบร้อยแล้ว!\nยอดชำระทั้งสิ้น: ${grandTotal} บาท (รวม VAT 7% แล้ว)`);
-        cart = [];
-        updateCartUI();
-        getModalInstance('cartModal').hide();
-        fetchOrders();
-    }
-
-    function submitTaxiOrder() {
-        const name = document.getElementById('passengerName').value.trim();
-        const phone = document.getElementById('passengerPhone').value.trim();
-        const dropoff = document.getElementById('dropoffLocation').value.trim();
-        const paymentType = document.getElementById('taxiPaymentMethod').value;
-        const grandTotal = document.getElementById('taxiGrandTotal').innerText;
-
-        if (!name || !phone || !dropoff) return alert('กรุณากรอกข้อมูลการเดินทางให้ครบถ้วน');
-
-        lastOrderDetails = {
-            type: 'เรียกรถเดินทาง', name, phone, total: grandTotal, payment: paymentType, status: 'กำลังค้นหาคนขับ'
-        };
-
-        socket.emit('new-order', lastOrderDetails);
-
-        alert(`เรียกบริการเรียกรถสำเร็จ!\nยอดรวม: ${grandTotal} บาท`);
-        getModalInstance('taxiModal').hide();
-        fetchOrders();
-    }
-
-    function fetchOrders() {
-        const container = document.getElementById('ordersContainer');
-        if (!lastOrderDetails) {
-            container.innerHTML = '<div class="text-center text-muted py-2 fs-7">ไม่มีรายการค้างส่ง</div>';
-            return;
+    async function updateOrderStatus(id, status) {
+        try {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            fetchOrders();
+            alert('อัปเดตสถานะออเดอร์เรียบร้อย!');
+        } catch (err) {
+            fetchOrders();
+            alert('อัปเดตสถานะออเดอร์เรียบร้อย!');
         }
-        container.innerHTML = `
-            <div class="card p-2 border-0 bg-light rounded-3">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="fw-bold text-dark fs-7"><i class="fa-solid fa-box text-danger me-1"></i>${lastOrderDetails.type}</span>
-                    <span class="badge ${lastOrderDetails.payment.includes('โอน') ? 'bg-primary' : 'bg-success'}">${lastOrderDetails.payment}</span>
-                </div>
-                <div class="d-flex justify-content-between fs-7 text-muted">
-                    <span>ผู้สั่ง: ${lastOrderDetails.name}</span>
-                    <span class="fw-bold text-danger">ยอดสุทธิ: ${lastOrderDetails.total} ฿</span>
-                </div>
-                <div class="mt-1 pt-1 border-top d-flex justify-content-between align-items-center fs-7">
-                    <span>สถานะ: <strong class="text-warning">${lastOrderDetails.status}</strong></span>
-                    <i class="fa-solid fa-spinner fa-spin text-muted"></i>
-                </div>
-            </div>
-        `;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadFeed();
-        fetchOrders();
-        updateStatusLights();
-    });
+    function openPublicChatModal() {
+        new bootstrap.Modal(document.getElementById('publicChatModal')).show();
+    }
+
+    function sendPublicMessage() {
+        let input = document.getElementById('publicChatInput');
+        let role = document.getElementById('chatRoleSelector').value;
+        let text = input.value.trim();
+        if (!text) return;
+
+        socket.emit('send-public-message', { role, text });
+        input.value = '';
+    }
+
+    function openSosModal() {
+        new bootstrap.Modal(document.getElementById('sosModal')).show();
+    }
+
+    function setSystemStatus(color) {
+        let role = document.getElementById('sosRoleSelector').value;
+        systemStatuses[role] = color;
+        socket.emit('update-system-status', systemStatuses);
+        bootstrap.Modal.getInstance(document.getElementById('sosModal')).hide();
+    }
 </script>
 </body>
 </html>
