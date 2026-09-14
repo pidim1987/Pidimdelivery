@@ -5,7 +5,12 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
+    }
+});
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -51,15 +56,17 @@ app.patch('/api/orders/:id', (req, res) => {
 
     Object.assign(order, req.body);
     
-    // Broadcast การอัปเดตสถานะให้ทุกหน้าจอซิงค์กัน
+    // Broadcast การอัปเดตสถานะให้ทุกหน้าจอซิงค์กัน (ครอบคลุมทุกชื่ออีเวนต์ที่หน้าบ้านอาจใช้)
     io.emit('broadcast-order-updated', order);
+    io.emit('order-updated', order);
+    io.emit('broadcast-new-order', order);
     
     res.json(order);
 });
 
 // Socket.io การเชื่อมต่อและการสื่อสารเรียลไทม์
 io.on('connection', (socket) => {
-    console.Hologram || console.log('🟢 ผู้ใช้งานเชื่อมต่อเข้ามาผ่าน Socket.io ID:', socket.id);
+    console.log('🟢 ผู้ใช้งานเชื่อมต่อเข้ามาผ่าน Socket.io ID:', socket.id);
 
     // ส่งสถานะไฟปัจจุบันให้ผู้ใช้ใหม่ทันทีที่เชื่อมต่อ
     socket.emit('broadcast-system-status', systemStatuses);
