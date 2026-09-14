@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบรับงานสำหรับไรเดอร์ - ปิยสัตตาบริการ (Rider App)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-radius: 16px;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Kanit', sans-serif;
+            color: #2d3748;
+        }
+        
+        /* Header ไรเดอร์ */
+        .piyasatta-header {
+            background: linear-gradient(135deg, #10ac84, #1dd1a1);
+            color: #ffffff;
+            padding: 16px 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 20px rgba(16, 172, 132, 0.15);
+            border-radius: 0 0 20px 20px;
+        }
+        .piyasatta-title { font-weight: 600; font-size: calc(1rem + 0.3vw); }
+        .piyasatta-sub { opacity: 0.9; font-weight: 300; font-size: 0.75rem; }
+
+        .card-custom { border: none; border-radius: var(--card-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .wallet-card { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; border-radius: var(--card-radius); }
+        .profile-avatar { width: 90px; height: 90px; object-fit: cover; border-radius: 50%; border: 3px solid #1dd1a1; }
+        
+        /* ไฟสถานะ 3 สี (เชื่อมโยงกับระบบกลาง) */
+        .status-light {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px currentColor;
+        }
+        .light-green { color: #2ed573; background-color: #2ed573; }
+        .light-yellow { color: #ffa502; background-color: #ffa502; }
+        .light-red { color: #ff4757; background-color: #ff4757; animation: pulse-red 1.5s infinite; }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+
+        /* Floating Action Buttons (Chat & SOS) */
+        .floating-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 16px;
+            z-index: 1025;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .float-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .float-btn:active { transform: scale(0.9); }
+        .btn-chat { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .btn-sos { background: linear-gradient(135deg, #ff7675, #d63031); }
+
+        .fs-7 { font-size: 0.8rem; }
+    </style>
+</head>
+<body class="pb-5 mb-5">
+
+<div class="piyasatta-header text-center">
+    <div class="piyasatta-title"><i class="fa-solid fa-motorcycle me-1"></i> ระบบรับงานสำหรับไรเดอร์</div>
+    <div class="piyasatta-sub mt-1">รับงานเดลิเวอรี จัดการกระเป๋าเงิน และข้อมูลโปรไฟล์ไรเดอร์</div>
+    <div class="piyasatta-sub" style="font-size: 0.68rem;">พื้นที่ให้บริการ: สันทราย จ.เชียงใหม่ | โทร: 098-0581545</div>
+</div>
+
+<div class="container-fluid px-3">
+    <!-- แถบแสดงสถานะความปลอดภัยส่วนกลาง 3 ฝั่ง -->
+    <div class="card p-2 mb-3 shadow-sm border-0 rounded-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center px-2">
+            <span class="fw-bold fs-7 text-dark"><i class="fa-solid fa-shield-halved me-1 text-success"></i>สถานะความปลอดภัยระบบ 3 ฝั่ง:</span>
+            <span id="globalSystemStatusBadge" class="badge bg-success fs-7 px-2 py-1">🟢 ได้รับการช่วยเหลือแล้ว</span>
+        </div>
+        <div class="row text-center mt-2 g-1 fs-7">
+            <div class="col-4 border-end">
+                <span class="status-light light-green" id="lightCustomer"></span>
+                <div class="text-muted" style="font-size:0.7rem;">ฝั่งลูกค้า</div>
+            </div>
+            <div class="col-4 border-end">
+                <span class="status-light light-green" id="lightMerchant"></span>
+                <div class="text-muted" style="font-size:0.7rem;">ฝั่งร้านค้า</div>
+            </div>
+            <div class="col-4">
+                <span class="status-light light-green" id="lightRider"></span>
+                <div class="text-muted" style="font-size:0.7rem;">ฝั่งไรเดอร์</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- เมนูสลับหน้าจอ (Tab) และ ข้อมูลย่อโปรไฟล์ -->
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-10">
+            <div class="card card-custom p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <img id="headerRiderImg" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width:42px; height:42px; border-radius:50%; object-fit:cover;">
+                        <div>
+                            <span class="fw-bold d-block fs-7" id="headerRiderName">ไรเดอร์ สมชาย</span>
+                            <small class="text-muted fs-7" id="headerPlate" style="font-size: 0.75rem;">ทะเบียน: กข 1234 เชียงใหม่</small>
+                        </div>
+                    </div>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-success active" id="btnTabOrders" onclick="switchTab('orders')"><i class="fa-solid fa-list-check me-1"></i>งานรับส่ง</button>
+                        <button type="button" class="btn btn-outline-success" id="btnTabProfile" onclick="switchTab('profile')"><i class="fa-solid fa-id-card me-1"></i>โปรไฟล์</button>
+                        <button type="button" class="btn btn-outline-success" id="btnTabWallet" onclick="switchTab('wallet')"><i class="fa-solid fa-wallet me-1"></i>กระเป๋าเงิน</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 1: รายการงานรับส่ง (เดลิเวอรี & เรียกรถ) -->
+    <div id="tabOrders">
+        <div class="card card-custom p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="card-title text-success mb-0 fs-6"><i class="fa-solid fa-map-location-dot me-2"></i>รายการงานเดลิเวอรี & เรียกรถ (เรียลไทม์)</h6>
+                <button class="btn btn-outline-success btn-sm fs-7" onclick="fetchOrders()"><i class="fa-solid fa-rotate me-1"></i>รีเฟรชงาน</button>
+            </div>
+            <div id="riderOrders" class="row g-2">
+                <div class="text-center text-muted py-4 fs-7">กำลังโหลดข้อมูลงาน...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: โปรไฟล์ส่วนตัวไรเดอร์ -->
+    <div id="tabProfile" style="display: none;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card card-custom p-4">
+                    <h6 class="card-title text-success mb-3 fs-6"><i class="fa-solid fa-user-gear me-2"></i>ตั้งค่าโปรไฟล์ไรเดอร์ / ข้อมูลผู้ขับ</h6>
+                    <form id="riderProfileForm" onsubmit="saveRiderProfile(event)">
+                        <div class="text-center mb-3">
+                            <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="profile-avatar mb-2">
+                            <div><small class="text-muted fs-7">รูปโปรไฟล์ผู้ขับขี่</small></div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold fs-7">ชื่อ-นามสกุล ไรเดอร์</label>
+                                <input type="text" id="inputRiderName" class="form-control form-control-sm" value="ไรเดอร์ สมชาย" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold fs-7">เบอร์โทรศัพท์</label>
+                                <input type="tel" id="inputRiderPhone" class="form-control form-control-sm" value="081-234-5678" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold fs-7">เลขทะเบียนรถ</label>
+                                <input type="text" id="inputLicensePlate" class="form-control form-control-sm" value="กข 1234 เชียงใหม่" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold fs-7">ประเภทพาหนะ</label>
+                                <select id="inputVehicleType" class="form-select form-select-sm">
+                                    <option value="รถจักรยานยนต์">รถจักรยานยนต์ (Motorcycle)</option>
+                                    <option value="รถยนต์">รถยนต์ (Car)</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold fs-7">URL รูปโปรไฟล์ (ลิงก์รูปภาพ)</label>
+                                <input type="url" id="inputAvatarUrl" class="form-control form-control-sm" placeholder="https://..." onchange="updateProfilePreview(this.value)">
+                            </div>
+                            <div class="col-12 text-end mt-3">
+                                <button type="submit" class="btn btn-success btn-sm fw-bold px-4 py-2"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกข้อมูลโปรไฟล์</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: กระเป๋าเงินดิจิทัล -->
+    <div id="tabWallet" style="display: none;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card wallet-card p-4 mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-white-50 fs-7">ยอดเงินคงเหลือในกระเป๋าไรเดอร์</small>
+                            <h2 class="fw-bold mb-0"><span id="walletBalance">350.00</span> ฿</h2>
+                        </div>
+                        <i class="fa-solid fa-wallet fa-3x opacity-50"></i>
+                    </div>
+                    <hr class="my-3 border-white opacity-25">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm fw-bold flex-grow-1 text-success fs-7" onclick="openWalletModal('deposit')"><i class="fa-solid fa-plus-circle me-1"></i>ฝากเงิน</button>
+                        <button class="btn btn-light btn-sm fw-bold flex-grow-1 text-danger fs-7" onclick="openWalletModal('withdraw')"><i class="fa-solid fa-arrow-down-left-across-line me-1"></i>ถอนเงิน</button>
+                        <button class="btn btn-warning btn-sm fw-bold flex-grow-1 text-dark fs-7" onclick="openWalletModal('transfer')"><i class="fa-solid fa-paper-plane me-1"></i>โอนเงิน</button>
+                    </div>
+                </div>
+
+                <div class="card card-custom p-3">
+                    <h6 class="fw-bold text-secondary mb-2 fs-6"><i class="fa-solid fa-clock-rotate-left me-2"></i>ประวัติธุรกรรมกระเป๋าเงิน</h6>
+                    <div id="walletHistoryList" class="list-group list-group-flush fs-7">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <div class="fw-bold">ได้รับค่ารอบจัดส่งออเดอร์เริ่มต้น</div>
+                                <small class="text-muted" style="font-size: 0.7rem;">05/08/2026, 12:00</small>
+                            </div>
+                            <span class="fw-bold text-success">+50.00 ฿</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ปุ่มลอย: แชทสาธารณะ 3 ฝั่ง และ SOS ฉุกเฉิน -->
+<div class="floating-buttons">
+    <button class="float-btn btn-sos" onclick="openSosModal()" title="ฉุกเฉิน / เปลี่ยนสถานะไฟ 3 สี">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </button>
+    <button class="float-btn btn-chat" onclick="openPublicChatModal()" title="แชทสาธารณะ 3 ฝั่ง">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+</div>
+
+<!-- Modal ธุรกรรมเงิน -->
+<div class="modal fade" id="walletActionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fs-7 fw-bold" id="walletModalTitle">ธุรกรรมกระเป๋าเงิน</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="walletActionType">
+                <div class="mb-2" id="transferTargetBox" style="display: none;">
+                    <label class="form-label fw-bold fs-7">รหัสกระเป๋าเงินปลายทาง</label>
+                    <input type="text" id="transferReceiverId" class="form-control form-control-sm" placeholder="เช่น merchant_01">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold fs-7">จำนวนเงิน (บาท)</label>
+                    <input type="number" id="walletAmountInput" class="form-control form-control-sm" placeholder="0.00" min="1">
+                </div>
+                <button class="btn btn-success btn-sm w-100 rounded-pill fw-bold py-2" onclick="submitWalletAction()">ยืนยันรายการ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal แชทสาธารณะ 3 ฝั่ง -->
+<div class="modal fade" id="publicChatModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-comments me-2"></i>แชทสาธารณะ 3 ฝั่ง (ลูกค้า / ร้านค้า / ไรเดอร์)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <div class="mb-2">
+                    <label class="form-label fs-7 fw-bold mb-1">เลือกบทบาทในการพิมพ์ (ตั้งค่าเป็นไรเดอร์):</label>
+                    <select class="form-select form-select-sm rounded-3" id="chatRoleSelector">
+                        <option value="ไรเดอร์" selected>🛵 ไรเดอร์</option>
+                        <option value="ลูกค้า">🛒 ลูกค้า</option>
+                        <option value="ร้านค้า">🍳 ร้านค้า/แม่ค้า</option>
+                    </select>
+                </div>
+                <div id="publicChatMessages" class="p-2 mb-3 bg-white rounded-3 border" style="height: 180px; overflow-y: auto; font-size: 0.8rem;">
+                    <div class="p-2 bg-light rounded-3 mb-2">
+                        <strong class="text-primary">[ระบบ]:</strong> ห้องสนทนากลางสำหรับประสานงานระหว่างลูกค้า ร้านค้า และไรเดอร์
+                    </div>
+                </div>
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control rounded-start-3" id="publicChatInput" placeholder="พิมพ์ข้อความรายงานสถานะ...">
+                    <button class="btn btn-success rounded-end-3" type="button" onclick="sendPublicMessage()">ส่งข้อความ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal แจ้งเหตุฉุกเฉิน & เปลี่ยนไฟ 3 สี -->
+<div class="modal fade" id="sosModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>ศูนย์ช่วยเหลือฉุกเฉิน & ควบคุมไฟสถานะ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <h6 class="fw-bold mb-2 fs-7">เลือกบทบาทเพื่อเปลี่ยนสถานะไฟความปลอดภัย:</h6>
+                <select class="form-select form-select-sm rounded-3 mb-3" id="sosRoleSelector">
+                    <option value="Rider" selected>ฝั่งไรเดอร์ (Rider)</option>
+                    <option value="Customer">ฝั่งลูกค้า</option>
+                    <option value="Merchant">ฝั่งร้านค้า/แม่ค้า</option>
+                </select>
+
+                <div class="d-grid gap-2 mb-3">
+                    <button class="btn btn-outline-success fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('green')">
+                        🟢 สีเขียว: ได้รับการช่วยเหลือแล้ว / ปกติ
+                    </button>
+                    <button class="btn btn-outline-warning fw-bold py-2 rounded-pill fs-7 text-dark" onclick="setSystemStatus('yellow')">
+                        🟡 สีเหลือง: ฉุกเฉินไม่มาก (รถเสีย/ฝนตกหนัก)
+                    </button>
+                    <button class="btn btn-danger fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('red')">
+                        🔴 สีแดง: อุบัติเหตุ / ต้องการความช่วยเหลือด่วน!
+                    </button>
+                </div>
+
+                <hr>
+                <a href="tel:0980581545" class="btn btn-dark w-100 rounded-pill py-2 fw-bold fs-7 mb-2">
+                    <i class="fa-solid fa-phone me-1"></i> โทรด่วนสำนักงาน: 098-0581545
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- โหลด Socket.io สำหรับเชื่อมต่อกับ Render Server -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const socket = io(); // เชื่อมต่อกับ Backend ผ่าน Socket.io
+    const API_URL = '/api/orders';
+    let currentBalance = 350.00;
+    let walletHistory = [
+        { type: 'deposit', amount: 50.00, title: 'ได้รับค่ารอบจัดส่งออเดอร์เริ่มต้น', time: new Date().toLocaleString('th-TH') }
+    ];
+
+    let riderProfile = {
+        name: 'ไรเดอร์ สมชาย',
+        phone: '081-234-5678',
+        licensePlate: 'กข 1234 เชียงใหม่',
+        vehicleType: 'รถจักรยานยนต์',
+        avatarUrl: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+    };
+
+    let systemStatuses = {
+        Customer: 'green',
+        Merchant: 'green',
+        Rider: 'green'
+    };
+
+    window.onload = function() {
+        fetchOrders();
+        updateStatusLights();
+    };
+
+    // รับออเดอร์ใหม่จากลูกค้าแบบเรียลไทม์
+    socket.on('broadcast-new-order', (orderData) => {
+        fetchOrders();
+        alert('🔔 มีออเดอร์งานใหม่เข้ามาในระบบ!');
+    });
+
+    // รับข้อความแชทแบบเรียลไทม์
+    socket.on('receive-public-message', (data) => {
+        const chatBox = document.getElementById('publicChatMessages');
+        let badgeColor = data.role === 'ไรเดอร์' ? 'text-success' : (data.role === 'ลูกค้า' ? 'text-primary' : 'text-warning');
+        chatBox.innerHTML += `<div class="p-2 bg-white border rounded-3 mb-2"><strong class="${badgeColor}">[${data.role}]:</strong> ${data.text}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    // รับสถานะไฟ SOS แบบเรียลไทม์
+    socket.on('broadcast-system-status', (statuses) => {
+        systemStatuses = statuses;
+        updateStatusLights();
+    });
+
+    function updateStatusLights() {
+        const mapColorClass = { green: 'light-green', yellow: 'light-yellow', red: 'light-red' };
+        
+        document.getElementById('lightCustomer').className = `status-light ${mapColorClass[systemStatuses.Customer]}`;
+        document.getElementById('lightMerchant').className = `status-light ${mapColorClass[systemStatuses.Merchant]}`;
+        document.getElementById('lightRider').className = `status-light ${mapColorClass[systemStatuses.Rider]}`;
+
+        const globalBadge = document.getElementById('globalSystemStatusBadge');
+        if (systemStatuses.Customer === 'red' || systemStatuses.Merchant === 'red' || systemStatuses.Rider === 'red') {
+            globalBadge.className = 'badge bg-danger fs-7 px-2 py-1';
+            globalBadge.innerText = '🔴 ฉุกเฉินมาก (ต้องการความช่วยเหลือด่วน)!';
+        } else if (systemStatuses.Customer === 'yellow' || systemStatuses.Merchant === 'yellow' || systemStatuses.Rider === 'yellow') {
+            globalBadge.className = 'badge bg-warning text-dark fs-7 px-2 py-1';
+            globalBadge.innerText = '🟡 ฉุกเฉินไม่มาก (เฝ้าระวัง)';
+        } else {
+            globalBadge.className = 'badge bg-success fs-7 px-2 py-1';
+            globalBadge.innerText = '🟢 ได้รับการช่วยเหลือแล้ว';
+        }
+    }
+
+    function switchTab(tab) {
+        document.getElementById('tabOrders').style.display = tab === 'orders' ? 'block' : 'none';
+        document.getElementById('tabProfile').style.display = tab === 'profile' ? 'block' : 'none';
+        document.getElementById('tabWallet').style.display = tab === 'wallet' ? 'block' : 'none';
+
+        document.getElementById('btnTabOrders').className = tab === 'orders' ? 'btn btn-success active' : 'btn btn-outline-success';
+        document.getElementById('btnTabProfile').className = tab === 'profile' ? 'btn btn-success active' : 'btn btn-outline-success';
+        document.getElementById('btnTabWallet').className = tab === 'wallet' ? 'btn btn-success active' : 'btn btn-outline-success';
+
+        if (tab === 'wallet') updateWalletUI();
+    }
+
+    function updateProfilePreview(url) {
+        if(url) document.getElementById('profilePreview').src = url;
+    }
+
+    function saveRiderProfile(e) {
+        e.preventDefault();
+        riderProfile.name = document.getElementById('inputRiderName').value;
+        riderProfile.phone = document.getElementById('inputRiderPhone').value;
+        riderProfile.licensePlate = document.getElementById('inputLicensePlate').value;
+        riderProfile.vehicleType = document.getElementById('inputVehicleType').value;
+        
+        const urlInput = document.getElementById('inputAvatarUrl').value;
+        if(urlInput) riderProfile.avatarUrl = urlInput;
+
+        document.getElementById('headerRiderName').innerText = riderProfile.name;
+        document.getElementById('headerPlate').innerText = 'ทะเบียน: ' + riderProfile.licensePlate;
+        document.getElementById('headerRiderImg').src = riderProfile.avatarUrl;
+
+        alert('บันทึกข้อมูลโปรไฟล์ไรเดอร์เรียบร้อยแล้ว!');
+        switchTab('orders');
+    }
+
+    async function fetchOrders() {
+        try {
+            const res = await fetch(API_URL);
+            const orders = await res.json();
+            const container = document.getElementById('riderOrders');
+
+            if (!orders || orders.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-4 fs-7">ยังไม่มีคำสั่งซื้อในระบบ</div>';
+                return;
+            }
+
+            container.innerHTML = orders.slice().reverse().map(order => {
+                const isTaxi = order.orderType === 'taxi';
+                const pickupLocation = isTaxi ? order.pickupLocation : (order.shopAddress || 'ร้านค้า');
+                const dropoffLocation = isTaxi ? order.dropoffLocation : order.address;
+
+                return `
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0 rounded-4">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0 text-dark fs-7">
+                                    ${isTaxi ? '<i class="fa-solid fa-taxi text-warning me-1"></i>' : '<i class="fa-solid fa-box text-success me-1"></i>'}
+                                    ออเดอร์ #${order.id}
+                                </h6>
+                                <span class="badge ${getStatusBadgeClass(order.status)} fs-7">${formatStatus(order.status, isTaxi)}</span>
+                            </div>
+                            <p class="mb-1 fs-7"><strong>${isTaxi ? 'ผู้โดยสาร' : 'ลูกค้า'}:</strong> ${order.customerName} (${order.phone || '-'})</p>
+                            <p class="mb-1 fs-7 text-success"><strong>จุดรับ:</strong> ${pickupLocation}</p>
+                            <p class="mb-1 fs-7 text-danger"><strong>จุดส่ง:</strong> ${dropoffLocation}</p>
+                            
+                            ${!isTaxi ? `<p class="mb-1 fs-7"><strong>สินค้า:</strong> ${formatItems(order.items)}</p>` : `<p class="mb-1 fs-7"><strong>ประเภทรถ:</strong> ${order.vehicleType || 'รถจักรยานยนต์'}</p>`}
+                            
+                            <p class="mb-2 fw-bold text-success fs-7"><strong>ยอดเงิน:</strong> ${order.totalAmount} บาท</p>
+                            
+                            <div class="mb-2">
+                                <button class="btn btn-outline-danger btn-sm w-100 fw-bold fs-7 py-1" onclick="openMaps('${pickupLocation}', '${dropoffLocation}')">
+                                    <i class="fa-solid fa-map-location-dot me-1"></i> เปิด Google Maps นำทาง
+                                </button>
+                            </div>
+
+                            ${order.status === 'ready' || (isTaxi && order.status === 'pending') ? `
+                                <button class="btn btn-success w-100 py-1 fs-7 fw-bold" onclick="acceptOrder(${order.id})">
+                                    <i class="fa-solid fa-hand-holding-hand me-1"></i>กดรับงานนี้
+                                </button>
+                            ` : ''}
+
+                            ${order.status === 'delivering' ? `
+                                <div class="p-2 bg-light rounded-3 mb-2 d-flex align-items-center gap-2">
+                                    <img src="${order.riderAvatar || riderProfile.avatarUrl}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+                                    <div class="lh-1">
+                                        <div class="fw-bold fs-7">${order.riderName || riderProfile.name}</div>
+                                        <small class="text-muted" style="font-size:0.68rem;">ทะเบียน: ${order.riderLicensePlate || riderProfile.licensePlate}</small>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary w-100 py-1 fs-7 fw-bold" onclick="completeOrder(${order.id})">
+                                    <i class="fa-solid fa-circle-check me-1"></i>ปิดงาน (จัดส่งสำเร็จ)
+                                </button>
+                            ` : ''}
+
+                            ${order.status === 'completed' ? `
+                                <div class="text-success small text-center py-1 bg-light rounded-3 fs-7">
+                                    <i class="fa-solid fa-check me-1"></i>จัดส่งสำเร็จเรียบร้อย
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function getStatusBadgeClass(status) {
+        if (status === 'ready' || status === 'pending') return 'bg-warning text-dark';
+        if (status === 'delivering') return 'bg-info text-dark';
+        if (status === 'completed') return 'bg-success';
+        return 'bg-secondary';
+    }
+
+    function formatStatus(status, isTaxi) {
+        if (status === 'pending' && isTaxi) return 'รอรับงานเรียกรถ';
+        if (status === 'pending' || status === 'preparing') return 'ร้านกำลังเตรียมสินค้า';
+        if (status === 'ready') return 'รอไรเดอร์รับงาน';
+        if (status === 'delivering') return 'กำลังจัดส่ง';
+        if (status === 'completed') return 'จัดส่งสำเร็จ';
+        return status;
+    }
+
+    function formatItems(items) {
+        if (Array.isArray(items)) return items.map(i => `${i.name} x${i.qty}`).join(', ');
+        return items || '-';
+    }
+
+    async function acceptOrder(id) {
+        try {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    status: 'delivering', 
+                    riderName: riderProfile.name,
+                    riderPhone: riderProfile.phone,
+                    riderLicensePlate: riderProfile.licensePlate,
+                    riderAvatar: riderProfile.avatarUrl
+                })
+            });
+            fetchOrders();
+        } catch (err) {
+            alert('เกิดข้อผิดพลาดในการรับงาน');
+        }
+    }
+
+    async function completeOrder(id) {
+        try {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'completed' })
+            });
+            currentBalance += 50.00;
+            walletHistory.push({ type: 'deposit', amount: 50.00, title: 'ค่ารอบจัดส่งออเดอร์ #' + id, time: new Date().toLocaleString('th-TH') });
+            updateWalletUI();
+            fetchOrders();
+        } catch (err) {
+            alert('เกิดข้อผิดพลาดในการปิดงาน');
+        }
+    }
+
+    function openMaps(pickup, dropoff) {
+        if (!dropoff) return alert('ไม่พบข้อมูลจุดส่ง');
+        let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(dropoff)}&travelmode=driving`;
+        window.open(url, '_blank');
+    }
+
+    function openWalletModal(type) {
+        document.getElementById('walletActionType').value = type;
+        const titles = { deposit: 'ฝากเงินเข้ากระเป๋า', withdraw: 'ถอนเงินออกจากระบบ', transfer: 'โอนเงินภายในระบบ' };
+        document.getElementById('walletModalTitle').innerText = titles[type];
+        document.getElementById('transferTargetBox').style.display = type === 'transfer' ? 'block' : 'none';
+        document.getElementById('walletAmountInput').value = '';
+        new bootstrap.Modal(document.getElementById('walletActionModal')).show();
+    }
+
+    function submitWalletAction() {
+        let type = document.getElementById('walletActionType').value;
+        let amount = parseFloat(document.getElementById('walletAmountInput').value);
+        if (!amount || amount <= 0) {
+            alert('กรุณากรอกจำนวนเงินให้ถูกต้อง');
+            return;
+        }
+
+        if (type === 'withdraw' || type === 'transfer') {
+            if (currentBalance < amount) {
+                alert('ยอดเงินในกระเป๋าไม่เพียงพอ');
+                return;
+            }
+            currentBalance -= amount;
+        } else {
+            currentBalance += amount;
+        }
+
+        walletHistory.push({ 
+            type: type, 
+            amount: amount, 
+            title: type === 'deposit' ? 'ฝากเงิน' : (type === 'withdraw' ? 'ถอนเงิน' : 'โอนเงินออก'), 
+            time: new Date().toLocaleString('th-TH') 
+        });
+
+        updateWalletUI();
+        bootstrap.Modal.getInstance(document.getElementById('walletActionModal')).hide();
+        alert('ทำรายการกระเป๋าเงินสำเร็จ!');
+    }
+
+    function updateWalletUI() {
+        document.getElementById('walletBalance').innerText = currentBalance.toFixed(2);
+        const historyList = document.getElementById('walletHistoryList');
+        if (walletHistory.length === 0) {
+            historyList.innerHTML = '<div class="text-center text-muted py-2 fs-7">ยังไม่มีประวัติรายการ</div>';
+            return;
+        }
+        historyList.innerHTML = walletHistory.slice().reverse().map(h => `
+            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div>
+                    <div class="fw-bold fs-7">${h.title}</div>
+                    <small class="text-muted" style="font-size: 0.68rem;">${h.time}</small>
+                </div>
+                <span class="fw-bold fs-7 ${h.type === 'deposit' || h.type === 'transfer_in' ? 'text-success' : 'text-danger'}">
+                    ${h.type === 'deposit' || h.type === 'transfer_in' ? '+' : '-'}${parseFloat(h.amount).toFixed(2)} ฿
+                </span>
+            </div>
+        `).join('');
+    }
+
+    function openPublicChatModal() {
+        new bootstrap.Modal(document.getElementById('publicChatModal')).show();
+    }
+
+    function sendPublicMessage() {
+        let input = document.getElementById('publicChatInput');
+        let role = document.getElementById('chatRoleSelector').value;
+        let text = input.value.trim();
+        if (!text) return;
+
+        socket.emit('send-public-message', { role, text });
+        input.value = '';
+    }
+
+    function openSosModal() {
+        new bootstrap.Modal(document.getElementById('sosModal')).show();
+    }
+
+    function setSystemStatus(color) {
+        let role = document.getElementById('sosRoleSelector').value;
+        systemStatuses[role] = color;
+
+        socket.emit('update-system-status', systemStatuses);
+        bootstrap.Modal.getInstance(document.getElementById('sosModal')).hide();
+    }
+</script>
+</body>
+</html>

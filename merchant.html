@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการร้านค้า - ปิยสัตตาบริการ (Merchant App)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-radius: 16px;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Kanit', sans-serif;
+            color: #2d3748;
+        }
+        
+        /* Header ร้านค้า (โทนส้ม-แดง เอกลักษณ์ร้านค้า) */
+        .piyasatta-header {
+            background: linear-gradient(135deg, #ff8c42, #e63946);
+            color: #ffffff;
+            padding: 16px 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 20px rgba(230, 57, 70, 0.15);
+            border-radius: 0 0 20px 20px;
+        }
+        .piyasatta-title { font-weight: 600; font-size: calc(1rem + 0.3vw); }
+        .piyasatta-sub { opacity: 0.9; font-weight: 300; font-size: 0.75rem; }
+
+        .card-custom { border: none; border-radius: var(--card-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .wallet-card { background: linear-gradient(135deg, #ff8c42, #e63946); color: white; border-radius: var(--card-radius); }
+        .profile-avatar { width: 90px; height: 90px; object-fit: cover; border-radius: 50%; border: 3px solid #ff8c42; }
+        
+        /* ไฟสถานะ 3 สี (เชื่อมโยงกับระบบกลาง) */
+        .status-light {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px currentColor;
+        }
+        .light-green { color: #2ed573; background-color: #2ed573; }
+        .light-yellow { color: #ffa502; background-color: #ffa502; }
+        .light-red { color: #ff4757; background-color: #ff4757; animation: pulse-red 1.5s infinite; }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+
+        /* Floating Action Buttons (Chat & SOS) */
+        .floating-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 16px;
+            z-index: 1025;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .float-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .float-btn:active { transform: scale(0.9); }
+        .btn-chat { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .btn-sos { background: linear-gradient(135deg, #ff7675, #d63031); }
+
+        .fs-7 { font-size: 0.8rem; }
+    </style>
+</head>
+<body class="pb-5 mb-5">
+
+<div class="piyasatta-header text-center">
+    <div class="piyasatta-title"><i class="fa-solid fa-store me-1"></i> ระบบจัดการร้านค้า</div>
+    <div class="piyasatta-sub mt-1">รับออเดอร์ จัดการเมนูอาหาร กระเป๋าเงิน และโปรไฟล์ร้านค้า</div>
+    <div class="piyasatta-sub" style="font-size: 0.68rem;">พื้นที่ให้บริการ: สันทราย จ.เชียงใหม่ | โทร: 098-0581545</div>
+</div>
+
+<div class="container-fluid px-3">
+    <!-- แถบแสดงสถานะความปลอดภัยส่วนกลาง 3 ฝั่ง -->
+    <div class="card p-2 mb-3 shadow-sm border-0 rounded-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center px-2">
+            <span class="fw-bold fs-7 text-dark"><i class="fa-solid fa-shield-halved me-1 text-danger"></i>สถานะความปลอดภัยระบบ 3 ฝั่ง:</span>
+            <span id="globalSystemStatusBadge" class="badge bg-success fs-7 px-2 py-1">🟢 ได้รับการช่วยเหลือแล้ว</span>
+        </div>
+        <div class="row text-center mt-2 g-1 fs-7">
+            <div class="col-4 border-end">
+                <span class="status-light light-green" id="lightCustomer"></span>
+                <div class="text-muted" style="font-size:0.7rem;">ฝั่งลูกค้า</div>
+            </div>
+            <div class="col-4 border-end">
+                <span class="status-light light-green" id="lightMerchant"></span>
+                <div class="text-muted" style="font-size:0.7rem;">ฝั่งร้านค้า</div>
+            </div>
+            <div class="col-4">
+                <span class="status-light light-green" id="lightRider"></span>
+                <div class="text-muted" style="font-size:0.7rem;">ฝั่งไรเดอร์</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- เมนูสลับหน้าจอ (Tab) และ ข้อมูลย่อโปรไฟล์ร้านค้า -->
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-10">
+            <div class="card card-custom p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <img id="headerMerchantImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150" style="width:42px; height:42px; border-radius:50%; object-fit:cover;">
+                        <div>
+                            <span class="fw-bold d-block fs-7" id="headerMerchantName">ร้านกะเพราถาดยอดฮิต</span>
+                            <small class="text-muted fs-7" id="headerMerchantOwner" style="font-size: 0.75rem;">เจ้าของ: คุณวิชัย (merchant_01)</small>
+                        </div>
+                    </div>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-danger active" id="btnTabOrders" onclick="switchTab('orders')"><i class="fa-solid fa-list-check me-1"></i>ออเดอร์</button>
+                        <button type="button" class="btn btn-outline-danger" id="btnTabProducts" onclick="switchTab('products')"><i class="fa-solid fa-utensils me-1"></i>เมนูอาหาร</button>
+                        <button type="button" class="btn btn-outline-danger" id="btnTabProfile" onclick="switchTab('profile')"><i class="fa-solid fa-id-card me-1"></i>โปรไฟล์</button>
+                        <button type="button" class="btn btn-outline-danger" id="btnTabWallet" onclick="switchTab('wallet')"><i class="fa-solid fa-wallet me-1"></i>กระเป๋าเงิน</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 1: รายการออเดอร์ที่เข้ามาในร้าน -->
+    <div id="tabOrders">
+        <div class="card card-custom p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="card-title text-danger mb-0 fs-6"><i class="fa-solid fa-receipt me-2"></i>ออเดอร์ที่เข้ามาในร้าน (เรียลไทม์)</h6>
+                <button class="btn btn-outline-danger btn-sm fs-7" onclick="fetchMerchantOrders()"><i class="fa-solid fa-rotate me-1"></i>รีเฟรชออเดอร์</button>
+            </div>
+            <div id="merchantOrdersList" class="row g-2">
+                <div class="text-center text-muted py-4 fs-7">กำลังโหลดข้อมูลออเดอร์...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: จัดการเมนูอาหาร -->
+    <div id="tabProducts" style="display: none;">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card card-custom p-3 mb-3">
+                    <h6 class="card-title text-danger mb-3 fs-6"><i class="fa-solid fa-plus-circle me-2"></i>เพิ่มเมนูอาหารใหม่</h6>
+                    <form onsubmit="handleAddProduct(event)">
+                        <div class="row g-2">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold fs-7">ชื่อเมนู</label>
+                                <input type="text" id="inputProdName" class="form-control form-control-sm" placeholder="เช่น ข้าวผัดกะเพราหมูกรอบ" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold fs-7">ราคา (บาท)</label>
+                                <input type="number" id="inputProdPrice" class="form-control form-control-sm" placeholder="60" required min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold fs-7">ลิงก์รูปภาพเมนู (URL)</label>
+                                <input type="url" id="inputProdImg" class="form-control form-control-sm" placeholder="https://..." required>
+                            </div>
+                            <div class="col-12 text-end mt-2">
+                                <button type="submit" class="btn btn-danger btn-sm fw-bold px-4 py-2"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกเพิ่มเมนู</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card card-custom p-3">
+                    <h6 class="fw-bold text-secondary mb-3 fs-6"><i class="fa-solid fa-utensils me-2"></i>รายการเมนูทั้งหมดในร้าน</h6>
+                    <div id="merchantProductList" class="row g-2">
+                        <div class="text-center text-muted py-3 fs-7">ยังไม่มีเมนูในระบบ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: โปรไฟล์ส่วนตัวและข้อมูลร้านค้า -->
+    <div id="tabProfile" style="display: none;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card card-custom p-4">
+                    <h6 class="card-title text-danger mb-3 fs-6"><i class="fa-solid fa-store me-2"></i>ตั้งค่าโปรไฟล์และข้อมูลร้านค้า</h6>
+                    <form id="merchantProfileForm" onsubmit="saveMerchantProfile(event)">
+                        <div class="text-center mb-3">
+                            <img id="profilePreview" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150" class="profile-avatar mb-2">
+                            <div><small class="text-muted fs-7">รูปโลโก้ / โปรไฟล์ร้านค้า</small></div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold fs-7">ชื่อร้านค้า</label>
+                                <input type="text" id="inputShopName" class="form-control form-control-sm" value="ร้านกะเพราถาดยอดฮิต" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold fs-7">ชื่อเจ้าของร้าน (Username)</label>
+                                <input type="text" id="inputOwnerName" class="form-control form-control-sm" value="คุณวิชัย" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold fs-7">URL โลโก้ร้านค้า</label>
+                                <input type="url" id="inputShopLogo" class="form-control form-control-sm" value="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150" onchange="updateProfilePreview(this.value)">
+                            </div>
+                            <div class="col-12 text-end mt-3">
+                                <button type="submit" class="btn btn-danger btn-sm fw-bold px-4 py-2"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกข้อมูลร้านค้า</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: กระเป๋าเงินดิจิทัล -->
+    <div id="tabWallet" style="display: none;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card wallet-card p-4 mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-white-50 fs-7">ยอดเงินคงเหลือในกระเป๋าร้านค้า</small>
+                            <h2 class="fw-bold mb-0"><span id="walletBalance">1500.00</span> ฿</h2>
+                        </div>
+                        <i class="fa-solid fa-wallet fa-3x opacity-50"></i>
+                    </div>
+                    <hr class="my-3 border-white opacity-25">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm fw-bold flex-grow-1 text-danger fs-7" onclick="openWalletModal('deposit')"><i class="fa-solid fa-plus-circle me-1"></i>ฝากเงิน</button>
+                        <button class="btn btn-light btn-sm fw-bold flex-grow-1 text-dark fs-7" onclick="openWalletModal('withdraw')"><i class="fa-solid fa-arrow-down-left-across-line me-1"></i>ถอนเงิน</button>
+                        <button class="btn btn-warning btn-sm fw-bold flex-grow-1 text-dark fs-7" onclick="openWalletModal('transfer')"><i class="fa-solid fa-paper-plane me-1"></i>โอนเงิน</button>
+                    </div>
+                </div>
+
+                <div class="card card-custom p-3">
+                    <h6 class="fw-bold text-secondary mb-2 fs-6"><i class="fa-solid fa-clock-rotate-left me-2"></i>ประวัติธุรกรรมกระเป๋าเงิน</h6>
+                    <div id="walletHistoryList" class="list-group list-group-flush fs-7">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <div class="fw-bold">ยอดขายอาหารสะสมเข้ากระเป๋า</div>
+                                <small class="text-muted" style="font-size: 0.7rem;">05/08/2026, 12:00</small>
+                            </div>
+                            <span class="fw-bold text-success">+1,500.00 ฿</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ปุ่มลอย: แชทสาธารณะ 3 ฝั่ง และ SOS ฉุกเฉิน -->
+<div class="floating-buttons">
+    <button class="float-btn btn-sos" onclick="openSosModal()" title="ฉุกเฉิน / เปลี่ยนสถานะไฟ 3 สี">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </button>
+    <button class="float-btn btn-chat" onclick="openPublicChatModal()" title="แชทสาธารณะ 3 ฝั่ง">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+</div>
+
+<!-- Modal ธุรกรรมเงิน -->
+<div class="modal fade" id="walletActionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fs-7 fw-bold" id="walletModalTitle">ธุรกรรมกระเป๋าเงิน</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="walletActionType">
+                <div class="mb-2" id="transferTargetBox" style="display: none;">
+                    <label class="form-label fw-bold fs-7">รหัสกระเป๋าเงินปลายทาง</label>
+                    <input type="text" id="transferReceiverId" class="form-control form-control-sm" placeholder="เช่น rider_01">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold fs-7">จำนวนเงิน (บาท)</label>
+                    <input type="number" id="walletAmountInput" class="form-control form-control-sm" placeholder="0.00" min="1">
+                </div>
+                <button class="btn btn-danger btn-sm w-100 rounded-pill fw-bold py-2" onclick="submitWalletAction()">ยืนยันรายการ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal แชทสาธารณะ 3 ฝั่ง -->
+<div class="modal fade" id="publicChatModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-comments me-2"></i>แชทสาธารณะ 3 ฝั่ง (ลูกค้า / ร้านค้า / ไรเดอร์)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <div class="mb-2">
+                    <label class="form-label fs-7 fw-bold mb-1">เลือกบทบาทในการพิมพ์ (ตั้งค่าเป็นร้านค้า):</label>
+                    <select class="form-select form-select-sm rounded-3" id="chatRoleSelector">
+                        <option value="ร้านค้า" selected>🍳 ร้านค้า/แม่ค้า</option>
+                        <option value="ลูกค้า">🛒 ลูกค้า</option>
+                        <option value="ไรเดอร์">🛵 ไรเดอร์</option>
+                    </select>
+                </div>
+                <div id="publicChatMessages" class="p-2 mb-3 bg-white rounded-3 border" style="height: 180px; overflow-y: auto; font-size: 0.8rem;">
+                    <div class="p-2 bg-light rounded-3 mb-2">
+                        <strong class="text-danger">[ระบบ]:</strong> ห้องสนทนากลางสำหรับประสานงานระหว่างลูกค้า ร้านค้า และไรเดอร์
+                    </div>
+                </div>
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control rounded-start-3" id="publicChatInput" placeholder="พิมพ์ข้อความรายงานสถานะ...">
+                    <button class="btn btn-danger rounded-end-3" type="button" onclick="sendPublicMessage()">ส่งข้อความ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal แจ้งเหตุฉุกเฉิน & เปลี่ยนไฟ 3 สี -->
+<div class="modal fade" id="sosModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>ศูนย์ช่วยเหลือฉุกเฉิน & ควบคุมไฟสถานะ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <h6 class="fw-bold mb-2 fs-7">เลือกบทบาทเพื่อเปลี่ยนสถานะไฟความปลอดภัย:</h6>
+                <select class="form-select form-select-sm rounded-3 mb-3" id="sosRoleSelector">
+                    <option value="Merchant" selected>ฝั่งร้านค้า (Merchant)</option>
+                    <option value="Customer">ฝั่งลูกค้า</option>
+                    <option value="Rider">ฝั่งไรเดอร์</option>
+                </select>
+
+                <div class="d-grid gap-2 mb-3">
+                    <button class="btn btn-outline-success fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('green')">
+                        🟢 สีเขียว: ได้รับการช่วยเหลือแล้ว / ปกติ
+                    </button>
+                    <button class="btn btn-outline-warning fw-bold py-2 rounded-pill fs-7 text-dark" onclick="setSystemStatus('yellow')">
+                        🟡 สีเหลือง: ฉุกเฉินไม่มาก (วัตถุดิบหมด/ไฟดับ)
+                    </button>
+                    <button class="btn btn-danger fw-bold py-2 rounded-pill fs-7" onclick="setSystemStatus('red')">
+                        🔴 สีแดง: เหตุฉุกเฉินด่วนภายในร้าน!
+                    </button>
+                </div>
+
+                <hr>
+                <a href="tel:0980581545" class="btn btn-dark w-100 rounded-pill py-2 fw-bold fs-7 mb-2">
+                    <i class="fa-solid fa-phone me-1"></i> โทรด่วนสำนักงาน: 098-0581545
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- โหลด Socket.io สำหรับเชื่อมต่อกับ Render Server -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const socket = io(); // เชื่อมต่อกับ Backend ผ่าน Socket.io
+
+    let currentBalance = 1500.00;
+    let walletHistory = [
+        { type: 'deposit', amount: 1500.00, title: 'ยอดขายอาหารสะสมเข้ากระเป๋า', time: new Date().toLocaleString('th-TH') }
+    ];
+
+    let merchantProfile = {
+        shopName: 'ร้านกะเพราถาดยอดฮิต',
+        ownerName: 'คุณวิชัย',
+        logoUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150'
+    };
+
+    let merchantProducts = [
+        { id: 1, name: 'ผัดกระเพราหมูกรอบ', price: 60, img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500&q=80' }
+    ];
+
+    let merchantOrders = [
+        { id: 101, customerName: 'คุณสมชาย', phone: '081-234-5678', address: '45/1 ต.สันทรายหลวง', totalAmount: 142.20, statusText: 'รอดำเนินการทำอาหาร' }
+    ];
+
+    let systemStatuses = {
+        Customer: 'green',
+        Merchant: 'green',
+        Rider: 'green'
+    };
+
+    window.onload = function() {
+        fetchMerchantOrders();
+        renderMerchantProducts();
+        updateStatusLights();
+    };
+
+    // รับออเดอร์ใหม่จากลูกค้าแบบเรียลไทม์
+    socket.on('new-order', (orderData) => {
+        merchantOrders.unshift({
+            id: Math.floor(100 + Math.random() * 900),
+            customerName: orderData.name,
+            phone: orderData.phone,
+            address: `${orderData.type} (${orderData.payment || 'ชำระเงินแล้ว'})`,
+            totalAmount: parseFloat(orderData.total),
+            statusText: orderData.status || 'รอดำเนินการ'
+        });
+        fetchMerchantOrders();
+        alert('🔔 มีออเดอร์ใหม่เข้ามาในระบบ!');
+    });
+
+    // รับข้อความแชทแบบเรียลไทม์
+    socket.on('receive-public-message', (data) => {
+        const chatBox = document.getElementById('publicChatMessages');
+        let roleBadgeColor = data.role === 'ลูกค้า' ? 'text-primary' : (data.role === 'ร้านค้า' ? 'text-danger' : 'text-warning');
+        chatBox.innerHTML += `<div class="p-2 bg-white border rounded-3 mb-2"><strong class="${roleBadgeColor}">[${data.role}]:</strong> ${data.text}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    // รับสถานะไฟ SOS แบบเรียลไทม์
+    socket.on('broadcast-system-status', (statuses) => {
+        systemStatuses = statuses;
+        updateStatusLights();
+    });
+
+    function updateStatusLights() {
+        const mapColorClass = { green: 'light-green', yellow: 'light-yellow', red: 'light-red' };
+        
+        document.getElementById('lightCustomer').className = `status-light ${mapColorClass[systemStatuses.Customer]}`;
+        document.getElementById('lightMerchant').className = `status-light ${mapColorClass[systemStatuses.Merchant]}`;
+        document.getElementById('lightRider').className = `status-light ${mapColorClass[systemStatuses.Rider]}`;
+
+        const globalBadge = document.getElementById('globalSystemStatusBadge');
+        if (systemStatuses.Customer === 'red' || systemStatuses.Merchant === 'red' || systemStatuses.Rider === 'red') {
+            globalBadge.className = 'badge bg-danger fs-7 px-2 py-1';
+            globalBadge.innerText = '🔴 ฉุกเฉินมาก (ต้องการความช่วยเหลือด่วน)!';
+        } else if (systemStatuses.Customer === 'yellow' || systemStatuses.Merchant === 'yellow' || systemStatuses.Rider === 'yellow') {
+            globalBadge.className = 'badge bg-warning text-dark fs-7 px-2 py-1';
+            globalBadge.innerText = '🟡 ฉุกเฉินไม่มาก (เฝ้าระวัง)';
+        } else {
+            globalBadge.className = 'badge bg-success fs-7 px-2 py-1';
+            globalBadge.innerText = '🟢 ได้รับการช่วยเหลือแล้ว';
+        }
+    }
+
+    function switchTab(tab) {
+        document.getElementById('tabOrders').style.display = tab === 'orders' ? 'block' : 'none';
+        document.getElementById('tabProducts').style.display = tab === 'products' ? 'block' : 'none';
+        document.getElementById('tabProfile').style.display = tab === 'profile' ? 'block' : 'none';
+        document.getElementById('tabWallet').style.display = tab === 'wallet' ? 'block' : 'none';
+
+        document.getElementById('btnTabOrders').className = tab === 'orders' ? 'btn btn-danger active' : 'btn btn-outline-danger';
+        document.getElementById('btnTabProducts').className = tab === 'products' ? 'btn btn-danger active' : 'btn btn-outline-danger';
+        document.getElementById('btnTabProfile').className = tab === 'profile' ? 'btn btn-danger active' : 'btn btn-outline-danger';
+        document.getElementById('btnTabWallet').className = tab === 'wallet' ? 'btn btn-danger active' : 'btn btn-outline-danger';
+
+        if (tab === 'wallet') updateWalletUI();
+    }
+
+    function fetchMerchantOrders() {
+        const list = document.getElementById('merchantOrdersList');
+        if (merchantOrders.length === 0) {
+            list.innerHTML = '<div class="text-center text-muted py-4 fs-7">ยังไม่มีออเดอร์ใหม่เข้ามา</div>';
+            return;
+        }
+        list.innerHTML = '';
+        merchantOrders.forEach(o => {
+            list.innerHTML += `
+                <div class="col-12">
+                    <div class="card p-3 border shadow-sm rounded-4 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold fs-7">ออเดอร์ #${o.id}</span>
+                            <span class="badge bg-warning text-dark fs-7">${o.statusText}</span>
+                        </div>
+                        <div class="text-muted fs-7">ลูกค้า: ${o.customerName} (${o.phone})</div>
+                        <div class="text-muted fs-7 mb-2">รายละเอียด: ${o.address}</div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-danger fw-bold fs-7">ยอดรวม: ${o.totalAmount.toFixed(2)} ฿</span>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary fs-7" onclick="updateOrderStatus(${o.id}, 'กำลังทำอาหาร')">รับทำอาหาร</button>
+                                <button class="btn btn-outline-success fs-7" onclick="updateOrderStatus(${o.id}, 'พร้อมจัดส่ง')">พร้อมส่ง</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function updateOrderStatus(orderId, status) {
+        const order = merchantOrders.find(o => o.id === orderId);
+        if (order) {
+            order.statusText = status;
+            fetchMerchantOrders();
+            alert(`อัปเดตสถานะออเดอร์ #${orderId} เป็น "${status}" เรียบร้อย`);
+        }
+    }
+
+    function handleAddProduct(e) {
+        e.preventDefault();
+        const name = document.getElementById('inputProdName').value;
+        const price = parseFloat(document.getElementById('inputProdPrice').value);
+        const img = document.getElementById('inputProdImg').value;
+
+        merchantProducts.push({ id: Date.now(), name, price, img });
+        document.getElementById('inputProdName').value = '';
+        document.getElementById('inputProdPrice').value = '';
+        document.getElementById('inputProdImg').value = '';
+
+        renderMerchantProducts();
+        alert('เพิ่มเมนูอาหารสำเร็จ!');
+    }
+
+    function renderMerchantProducts() {
+        const list = document.getElementById('merchantProductList');
+        if (merchantProducts.length === 0) {
+            list.innerHTML = '<div class="text-center text-muted py-3 fs-7">ยังไม่มีเมนูในระบบ</div>';
+            return;
+        }
+        list.innerHTML = '';
+        merchantProducts.forEach(p => {
+            list.innerHTML += `
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2 p-2 border rounded-3 bg-white shadow-sm">
+                        <img src="${p.img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="fw-bold fs-7 text-truncate">${p.name}</div>
+                            <div class="text-danger fw-bold fs-7">${p.price} ฿</div>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm fs-7" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function deleteProduct(id) {
+        merchantProducts = merchantProducts.filter(p => p.id !== id);
+        renderMerchantProducts();
+    }
+
+    function saveMerchantProfile(e) {
+        e.preventDefault();
+        merchantProfile.shopName = document.getElementById('inputShopName').value;
+        merchantProfile.ownerName = document.getElementById('inputOwnerName').value;
+        merchantProfile.logoUrl = document.getElementById('inputShopLogo').value;
+
+        document.getElementById('headerMerchantName').innerText = merchantProfile.shopName;
+        document.getElementById('headerMerchantOwner').innerText = `เจ้าของ: ${merchantProfile.ownerName} (merchant_01)`;
+        document.getElementById('headerMerchantImg').src = merchantProfile.logoUrl;
+
+        alert('บันทึกข้อมูลโปรไฟล์ร้านค้าเรียบร้อย!');
+    }
+
+    function updateProfilePreview(url) {
+        if(url) document.getElementById('profilePreview').src = url;
+    }
+
+    function openWalletModal(type) {
+        document.getElementById('walletActionType').value = type;
+        const titles = { deposit: 'ฝากเงินเข้าร้าน', withdraw: 'ถอนเงินจากร้าน', transfer: 'โอนเงินไปบัญชีอื่น' };
+        document.getElementById('walletModalTitle').innerText = titles[type];
+        document.getElementById('transferTargetBox').style.display = type === 'transfer' ? 'block' : 'none';
+        document.getElementById('walletAmountInput').value = '';
+        new bootstrap.Modal(document.getElementById('walletActionModal')).show();
+    }
+
+    function submitWalletAction() {
+        const type = document.getElementById('walletActionType').value;
+        const amount = parseFloat(document.getElementById('walletAmountInput').value);
+        if(!amount || amount <= 0) { alert('กรุณากรอกจำนวนเงินให้ถูกต้อง'); return; }
+
+        if(type === 'deposit') currentBalance += amount;
+        else if(type === 'withdraw' || type === 'transfer') {
+            if(amount > currentBalance) { alert('ยอดเงินในกระเป๋าไม่พอ'); return; }
+            currentBalance -= amount;
+        }
+
+        walletHistory.unshift({ type, amount, title: `ทำรายการ ${type} สำเร็จ`, time: new Date().toLocaleString('th-TH') });
+        updateWalletUI();
+        bootstrap.Modal.getInstance(document.getElementById('walletActionModal')).hide();
+        alert('ทำรายการกระเป๋าเงินสำเร็จ!');
+    }
+
+    function updateWalletUI() {
+        document.getElementById('walletBalance').innerText = currentBalance.toFixed(2);
+        const list = document.getElementById('walletHistoryList');
+        list.innerHTML = '';
+        walletHistory.forEach(h => {
+            const isPlus = h.type === 'deposit';
+            list.innerHTML += `
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div>
+                        <div class="fw-bold">${h.title}</div>
+                        <small class="text-muted" style="font-size: 0.7rem;">${h.time}</small>
+                    </div>
+                    <span class="fw-bold ${isPlus ? 'text-success' : 'text-danger'}">${isPlus ? '+' : '-'}${h.amount.toFixed(2)} ฿</span>
+                </div>
+            `;
+        });
+    }
+
+    function openSosModal() { new bootstrap.Modal(document.getElementById('sosModal')).show(); }
+    function openPublicChatModal() { new bootstrap.Modal(document.getElementById('publicChatModal')).show(); }
+
+    function setSystemStatus(color) {
+        const role = document.getElementById('sosRoleSelector').value;
+        systemStatuses[role] = color;
+        
+        // ส่งสถานะไฟผ่าน Socket.io ไปอัปเดตทุกหน้าต่าง
+        socket.emit('update-system-status', systemStatuses);
+        bootstrap.Modal.getInstance(document.getElementById('sosModal')).hide();
+    }
+
+    function sendPublicMessage() {
+        const role = document.getElementById('chatRoleSelector').value;
+        const input = document.getElementById('publicChatInput');
+        const text = input.value.trim();
+        if(!text) return;
+
+        // ส่งข้อความผ่าน Socket.io
+        socket.emit('send-public-message', { role, text });
+        input.value = '';
+    }
+</script>
+</body>
+</html>
